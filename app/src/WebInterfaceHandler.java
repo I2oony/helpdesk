@@ -1,15 +1,15 @@
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import org.json.simple.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.sun.net.httpserver.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.logging.Logger;
 
 public class WebInterfaceHandler implements HttpHandler {
     static Logger logger;
+    static String htdocsPath = "C:\\Development\\Helpdesk\\frontend\\";
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         logger = new CustomLogger(WebInterfaceHandler.class.getName());
@@ -19,19 +19,20 @@ public class WebInterfaceHandler implements HttpHandler {
         Headers responseHeaders = httpExchange.getResponseHeaders();
         logger.info("Received HTTP Request with method " + method);
 
-        JSONObject responseBody = new JSONObject();
-        responseBody.put("Host", httpExchange.getRequestHeaders().getFirst("Host"));
-        responseBody.put("User-Agent", httpExchange.getRequestHeaders().getFirst("User-Agent"));
-        String responseString = responseBody.toJSONString();
+        // Ticket someTicket = new Ticket();
+
+        // Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
+        // String responseString = responseBody.toJson(someTicket);
+
+        Path fileName = FileSystems.getDefault().getPath(htdocsPath, "index.html");
+        byte[] responseString = Files.readAllBytes(fileName);
 
         switch (method) {
             case "GET":
-                logger.fine("Generated response body: " + responseString);
+                responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+                httpExchange.sendResponseHeaders(200, responseString.length);
 
-                responseHeaders.add("Content-Type", "application/json");
-                httpExchange.sendResponseHeaders(200, responseString.length());
-
-                responseStream.write(responseString.getBytes(StandardCharsets.UTF_8));
+                responseStream.write(responseString);
                 responseStream.flush();
                 responseStream.close();
                 break;
