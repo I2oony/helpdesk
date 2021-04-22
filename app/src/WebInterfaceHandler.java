@@ -1,9 +1,7 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.*;
+import services.CustomLogger;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.logging.Logger;
 
@@ -19,7 +17,7 @@ public class WebInterfaceHandler implements HttpHandler {
         Headers responseHeaders = httpExchange.getResponseHeaders();
         logger.info("Received HTTP Request with method " + method);
 
-        // Ticket someTicket = new Ticket();
+        // entites.Ticket someTicket = new entites.Ticket();
 
         // Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
         // String responseString = responseBody.toJson(someTicket);
