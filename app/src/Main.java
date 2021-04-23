@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class Main {
     static Logger logger;
-    private static int port = 80;
+    private static int port = 3000;
 
     public static void main(String[] args) {
         logger = new CustomLogger(Main.class.getName());

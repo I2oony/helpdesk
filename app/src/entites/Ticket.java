@@ -10,7 +10,7 @@ public class Ticket {
     private int totalMessages;
 
     // Creating an instance of the class for a new ticket.
-    Ticket(String title, String requester, Message message) {
+    public Ticket(String title, String requester, Message message) {
         this.title = title;
         this.requester = requester;
 

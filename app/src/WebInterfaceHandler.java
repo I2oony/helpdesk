@@ -1,13 +1,16 @@
+import com.google.gson.*;
 import com.sun.net.httpserver.*;
 import services.CustomLogger;
 
+import entites.*;
+
 import java.io.*;
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.logging.Logger;
 
 public class WebInterfaceHandler implements HttpHandler {
     static Logger logger;
-    static String htdocsPath = "C:\\Development\\Helpdesk\\frontend\\";
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         logger = new CustomLogger(WebInterfaceHandler.class.getName());
@@ -17,20 +20,18 @@ public class WebInterfaceHandler implements HttpHandler {
         Headers responseHeaders = httpExchange.getResponseHeaders();
         logger.info("Received HTTP Request with method " + method);
 
-        // entites.Ticket someTicket = new entites.Ticket();
+        Message someMessage = new Message(0, "client", "Hello darkness my old friend", new Date());
+        Ticket someTicket = new Ticket("Some Title", "client", someMessage);
 
-        // Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
-        // String responseString = responseBody.toJson(someTicket);
-
-        Path fileName = FileSystems.getDefault().getPath(htdocsPath, "index.html");
-        byte[] responseString = Files.readAllBytes(fileName);
+        Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
+        String responseString = responseBody.toJson(someTicket);
 
         switch (method) {
             case "GET":
-                responseHeaders.add("Content-Type", "text/html; charset=utf-8");
-                httpExchange.sendResponseHeaders(200, responseString.length);
+                responseHeaders.add("Content-Type", "application/json");
+                httpExchange.sendResponseHeaders(200, responseString.length());
 
-                responseStream.write(responseString);
+                responseStream.write(responseString.getBytes(StandardCharsets.UTF_8));
                 responseStream.flush();
                 responseStream.close();
                 break;
