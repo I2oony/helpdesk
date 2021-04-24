@@ -15,13 +15,21 @@ import static com.mongodb.client.model.Filters.*;
 
 public class DBConnect {
     static CustomLogger logger;
+    private static String host;
+    private static int port;
+
+    public static void setDbProperties(String host, int port) {
+        DBConnect.host = host;
+        DBConnect.port = port;
+    }
+
     private final MongoCollection<Document> usersCollection;
     private final MongoCollection<Document> ticketsCollection;
 
     public DBConnect() {
         logger = new CustomLogger(DBConnect.class.getName());
         Logger.getLogger("org.mongodb.driver").setParent(logger);
-        MongoClient client = new MongoClient();
+        MongoClient client = new MongoClient(host, port);
         MongoDatabase database = client.getDatabase("helpdesk");
         usersCollection = database.getCollection("users");
         ticketsCollection = database.getCollection("tickets");
@@ -95,4 +103,10 @@ public class DBConnect {
                         "\nRetrieved user:\n" + retrievedUser.toJson()
                 );
     }
+
+    @Test
+    public void ticketTest() {
+        logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'ticket' part completed.");
+    }
+
 }
