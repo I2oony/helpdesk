@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 public class Main {
     static Logger logger;
+    private static String host = "localhost";
     private static int port = 3000;
 
     public static void main(String[] args) {
@@ -15,9 +16,9 @@ public class Main {
         logger.info("Application started");
 
         try {
-            InetSocketAddress address = new InetSocketAddress(port);
+            InetSocketAddress address = new InetSocketAddress(host, port);
             HttpServer server = HttpServer.create(address, 0);
-            server.createContext("/", new WebInterfaceHandler());
+            server.createContext("/api/", new WebInterfaceHandler());
             server.start();
             logger.info("Server started on " + port);
         } catch (IOException e) {

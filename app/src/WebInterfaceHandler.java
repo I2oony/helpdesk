@@ -1,16 +1,15 @@
 import com.google.gson.*;
 import com.sun.net.httpserver.*;
-import services.CustomLogger;
-
-import entites.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.logging.Logger;
+
+import services.CustomLogger;
+import entites.*;
 
 public class WebInterfaceHandler implements HttpHandler {
-    static Logger logger;
+    static CustomLogger logger;
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         logger = new CustomLogger(WebInterfaceHandler.class.getName());

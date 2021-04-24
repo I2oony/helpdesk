@@ -9,9 +9,9 @@ public class CustomLogger extends Logger {
 
     public CustomLogger(String loggerName) {
         super(loggerName, null);
-        this.setLevel(Level.ALL);
+        this.setLevel(Level.INFO);
         ConsoleHandler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL);
+        handler.setLevel(Level.INFO);
         handler.setFormatter(new Formatter() {
             @Override
             public String format(LogRecord record) {
