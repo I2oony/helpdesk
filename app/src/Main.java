@@ -5,6 +5,7 @@ import services.DBConnect;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -19,15 +20,17 @@ public class Main {
 
         FileInputStream configFile;
         Properties property = new Properties();
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[32];
+        random.nextBytes(salt);
 
         Date currentDate = new Date();
         String defaultConfigFile = "config_" + currentDate.getTime() + ".properties";
-        String salt = Integer.toHexString((int)(Math.random()*1000000));
         property.setProperty("dbHost", "localhost");
         property.setProperty("dbPort", "27017");
         property.setProperty("httpHost", "localhost");
         property.setProperty("httpPort", "3000");
-        property.setProperty("globalSalt", salt);
+        property.setProperty("globalSalt", String.valueOf(salt));
 
         try {
             configFile = new FileInputStream("src/resources/config.properties");

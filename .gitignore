@@ -1,6 +1,7 @@
 /pics
 /app/.idea
 /app/out
+/app/config_*
 /nginx
 /app/src/resources/config.properties
 /XD
