@@ -1,14 +1,17 @@
 package services;
 
+import javax.crypto.spec.PBEKeySpec;
+import java.security.SecureRandom;
+
 public class Authentication {
-    private static String globalSalt;
 
-    public static void setSalt(String salt) {
-        globalSalt = salt;
-    }
+    public String hashPass(char[] pass) {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[32];
+        random.nextBytes(salt);
 
-    public String hashPass(String pass) {
-        // TODO Calculating and store the hash of the password.
+        PBEKeySpec spec = new PBEKeySpec(pass, salt, 1024);
+
         return "hash";
     }
 

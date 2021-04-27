@@ -1,11 +1,8 @@
 import com.sun.net.httpserver.*;
-import services.Authentication;
-import services.CustomLogger;
-import services.DBConnect;
+import services.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -20,9 +17,6 @@ public class Main {
 
         FileInputStream configFile;
         Properties property = new Properties();
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[32];
-        random.nextBytes(salt);
 
         Date currentDate = new Date();
         String defaultConfigFile = "config_" + currentDate.getTime() + ".properties";
@@ -30,7 +24,6 @@ public class Main {
         property.setProperty("dbPort", "27017");
         property.setProperty("httpHost", "localhost");
         property.setProperty("httpPort", "3000");
-        property.setProperty("globalSalt", String.valueOf(salt));
 
         try {
             configFile = new FileInputStream("src/resources/config.properties");
@@ -44,15 +37,12 @@ public class Main {
             FileOutputStream fileOutputStream = new FileOutputStream(defaultConfigFile);
             property.store(fileOutputStream, "Runtime config");
         } catch (Exception e) {
-            logger.warning("An error while saving the default configuration to file." +
-                    "\nHere is the salt: " + property.getProperty("globalSalt"));
+            logger.warning("An error while saving the default configuration to file.");
         }
 
         String dbHost = property.getProperty("dbHost");
         int dbPort = Integer.parseInt(property.getProperty("dbPort"));
         DBConnect.setDbProperties(dbHost, dbPort);
-
-        Authentication.setSalt(property.getProperty("globalSalt"));
 
         String host = property.getProperty("httpHost");
         int port = Integer.parseInt(property.getProperty("httpPort"));
