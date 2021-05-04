@@ -5,10 +5,8 @@ import org.junit.Test;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 import static com.mongodb.util.Util.toHex;
 
