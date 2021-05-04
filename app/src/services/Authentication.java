@@ -50,13 +50,12 @@ public class Authentication {
     @Test
     public void setPassTest() {
         DBConnect.setDbProperties("localhost", 27017);
-        DBConnect connect = new DBConnect();
-        User adminUser = connect.getUser("admin");
+        User adminUser = DBConnect.getUser("admin");
         String pass = "adminPass";
         char[] passChars = pass.toCharArray();
         try {
             adminUser.setPassword(hashPass(passChars, createSalt()));
-            connect.updateUser(adminUser);
+            DBConnect.updateUser(adminUser);
         } catch (GeneralSecurityException e) {
             logger.warning("An error occurred while setting the password");
         }
@@ -65,9 +64,8 @@ public class Authentication {
     @Test
     public void checkPassTest() {
         DBConnect.setDbProperties("localhost", 27017);
-        DBConnect connect = new DBConnect();
         String pass = "adminPass";
-        String hash = connect.getUsersPassword("admin");
+        String hash = DBConnect.getUsersPassword("admin");
         char[] passChars = pass.toCharArray();
         try {
             boolean isCorrect = checkPass(passChars, hash);
