@@ -1,12 +1,14 @@
+package main;
+
 import com.google.gson.*;
 import com.sun.net.httpserver.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import services.CustomLogger;
 import entites.*;
+import services.DBConnect;
 
 public class WebInterfaceHandler implements HttpHandler {
     static CustomLogger logger;
@@ -17,13 +19,16 @@ public class WebInterfaceHandler implements HttpHandler {
         String method = httpExchange.getRequestMethod();
         OutputStream responseStream = httpExchange.getResponseBody();
         Headers responseHeaders = httpExchange.getResponseHeaders();
-        logger.info("Received HTTP Request with method " + method);
+        logger.info("Received HTTP Request with method " + method +
+                ". Endpoint: " + httpExchange.getRequestURI().getPath());
 
-        Message someMessage = new Message(0, "client", "Hello darkness my old friend", new Date());
-        Ticket someTicket = new Ticket("Some Title", "client", someMessage);
+        InputStream requestBody = httpExchange.getRequestBody();
+
+        DBConnect connect = new DBConnect();
+        User testUser = connect.getUser("admin");
 
         Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
-        String responseString = responseBody.toJson(someTicket);
+        String responseString = responseBody.toJson(testUser);
 
         switch (method) {
             case "GET":

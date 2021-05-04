@@ -1,3 +1,5 @@
+package main;
+
 import com.sun.net.httpserver.*;
 import services.*;
 
@@ -6,10 +8,9 @@ import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
-    static Logger logger;
+    static CustomLogger logger;
 
     public static void main(String[] args) {
         logger = new CustomLogger(Main.class.getName());
@@ -50,9 +51,11 @@ public class Main {
         try {
             InetSocketAddress address = new InetSocketAddress(host, port);
             HttpServer server = HttpServer.create(address, 0);
-            server.createContext("/api/", new WebInterfaceHandler());
+            HttpContext apiContext = server.createContext("/web/", new WebInterfaceHandler());
+            HttpContext authContext = server.createContext("/api/users/auth", new AuthHandler());
+            //authContext.setAuthenticator(new BasicAuth());
             server.start();
-            logger.info("Server started on " + port);
+            logger.info("Server started on " + host + ":" + port);
         } catch (IOException e) {
             logger.log(Level.WARNING, "Exception occurred while starting the HTTP Server! - IOException", e);
         } catch (Throwable e) {
