@@ -1,5 +1,6 @@
 package services;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.*;
@@ -15,30 +16,24 @@ import static com.mongodb.client.model.Filters.*;
 
 public class DBConnect {
     static CustomLogger logger;
-    private static String host;
-    private static int port;
+
+    private static MongoCollection<Document> usersCollection;
+    private static MongoCollection<Document> ticketsCollection;
 
     public static void setDbProperties(String host, int port) {
-        DBConnect.host = host;
-        DBConnect.port = port;
-    }
-
-    private final MongoCollection<Document> usersCollection;
-    private final MongoCollection<Document> ticketsCollection;
-
-    public DBConnect() {
-        logger = new CustomLogger(DBConnect.class.getName());
-        Logger.getLogger("org.mongodb.driver").setParent(logger);
+        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
         MongoClient client = new MongoClient(host, port);
         MongoDatabase database = client.getDatabase("helpdesk");
         usersCollection = database.getCollection("users");
         ticketsCollection = database.getCollection("tickets");
     }
 
-    public boolean insertUser(User user) {
+    public static boolean insertUser(User user) {
+        logger.info("Inserting the new user.");
         try {
             Document document = Document.parse(user.toJson());
             usersCollection.insertOne(document);
+            logger.info("User successfully inserted.");
             return true;
         } catch (Exception e) {
             logger.warning("An error occurred while adding a user - " + e.getMessage());
@@ -46,7 +41,8 @@ public class DBConnect {
         }
     }
 
-    public User getUser(String username) {
+    public static User getUser(String username) {
+        logger.info("Fetching the user with username: " + username);
         Document document = usersCollection.find(eq("username", username)).first();
         return new User(
                 document.getString("username"),
@@ -57,10 +53,19 @@ public class DBConnect {
         );
     }
 
-    public boolean updateUser(User user) {
+    public static String getUsersPassword(String username) {
+        logger.info("Fetching password of user: " + username);
+        Document document = usersCollection.find(eq("username", username)).first();
+        return document.getString("password");
+    }
+
+    public static boolean updateUser(User user) {
+        String username = user.getUsername();
+        logger.info("Updating the user with username: " + username);
         try {
             Document document = Document.parse(user.toJson());
-            usersCollection.replaceOne(eq("username", user.getUsername()), document);
+            usersCollection.replaceOne(eq("username", username), document);
+            logger.info("User successfully updated.");
             return true;
         } catch (Exception e) {
             logger.warning("An error occurred while updating a user - " + e.getMessage());
@@ -68,9 +73,11 @@ public class DBConnect {
         }
     }
 
-    public boolean deleteUser(User user) throws MongoException {
+    public static boolean deleteUser(User user) throws MongoException {
+        String username = user.getUsername();
+        logger.info("Deleting the user with username: " + username);
         try {
-            usersCollection.deleteOne(eq("username", user.getUsername()));
+            usersCollection.deleteOne(eq("username", username));
             return true;
         } catch (Exception e) {
             logger.warning("An error occurred while deleting a user - " + e.getMessage());
