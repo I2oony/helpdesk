@@ -8,7 +8,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private final Role role;
+    private Role role;
     private String password;
 
     public User(String username, String email, Role role, String firstName, String lastName) {
@@ -23,6 +23,10 @@ public class User {
         return username;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     public boolean setPassword(String newPassword){
         password = newPassword;
         return true;
@@ -30,8 +34,7 @@ public class User {
 
     public String toJson() {
         Gson json = new GsonBuilder().setPrettyPrinting().create();
-        String jsonString = json.toJson(this);
-        return jsonString;
+        return json.toJson(this);
     }
 
     public enum Role {

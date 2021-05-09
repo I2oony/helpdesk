@@ -7,6 +7,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import static com.mongodb.util.Util.toHex;
 
@@ -20,7 +21,7 @@ public class Authentication {
         return salt;
     }
 
-    private byte[] fromHex(String hex) {
+    private static byte[] fromHex(String hex) {
         byte[] bytes = new byte[hex.length() / 2];
         for(int i = 0; i<bytes.length ;i++)
         {
@@ -40,11 +41,19 @@ public class Authentication {
         return toHex(salt) + ":" + toHex(hash);
     }
 
-    public boolean checkPass(char[] pass, String hash) throws GeneralSecurityException {
+    public static boolean checkPass(char[] pass, String hash) throws GeneralSecurityException {
         String[] splitHash = hash.split(":");
         String saltHex = splitHash[0];
         String hashedPass = hashPass(pass, fromHex(saltHex));
         return hash.equals(hashedPass);
+    }
+
+    public static String generateNewToken() {
+        byte[] randomBytes = new byte[24];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(randomBytes);
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();;
+        return base64Encoder.encodeToString(randomBytes);
     }
 
     @Test

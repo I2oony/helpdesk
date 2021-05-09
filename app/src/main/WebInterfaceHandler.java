@@ -24,8 +24,7 @@ public class WebInterfaceHandler implements HttpHandler {
 
         InputStream requestBody = httpExchange.getRequestBody();
 
-        DBConnect connect = new DBConnect();
-        User testUser = connect.getUser("admin");
+        User testUser = DBConnect.getUser("admin");
 
         Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
         String responseString = responseBody.toJson(testUser);
@@ -37,10 +36,10 @@ public class WebInterfaceHandler implements HttpHandler {
 
                 responseStream.write(responseString.getBytes(StandardCharsets.UTF_8));
                 responseStream.flush();
-                responseStream.close();
                 break;
             default:
                 break;
         }
+        httpExchange.close();
     }
 }

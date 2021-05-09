@@ -1,8 +1,11 @@
 package services;
 
+import java.net.ServerSocket;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entites.Session;
 import org.junit.*;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
@@ -19,13 +22,16 @@ public class DBConnect {
 
     private static MongoCollection<Document> usersCollection;
     private static MongoCollection<Document> ticketsCollection;
+    private static MongoCollection<Document> sessionsCollection;
 
     public static void setDbProperties(String host, int port) {
+        logger = new CustomLogger(DBConnect.class.getName());
         Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
         MongoClient client = new MongoClient(host, port);
         MongoDatabase database = client.getDatabase("helpdesk");
         usersCollection = database.getCollection("users");
         ticketsCollection = database.getCollection("tickets");
+        sessionsCollection = database.getCollection("sessions");
     }
 
     public static boolean insertUser(User user) {
@@ -85,8 +91,39 @@ public class DBConnect {
         }
     }
 
+    public static boolean addSession(Session session) {
+        try {
+            Document document = Document.parse(session.toJson());
+            sessionsCollection.insertOne(document);
+            logger.info("Session successfully added.");
+            return true;
+        } catch (Exception e) {
+            logger.warning("An error occurred while adding a session - " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static Date getSessionValidDate(String token) {
+        logger.info("Fetching session.");
+        Document document = sessionsCollection.find(eq("token", token)).first();
+        return document.getDate("validUntil");
+    }
+
+    public static boolean deleteSession(String token) {
+        logger.info("Deleting the session.");
+        try {
+            sessionsCollection.deleteOne(eq("token", token));
+            return true;
+        } catch (Exception e) {
+            logger.warning("An error occurred while deleting the session - " + e.getMessage());
+            return false;
+        }
+    }
+
     @Test
     public void userTest() {
+        setDbProperties("localhost", 27017);
+
         User testUser = new User(
                 "testUser",
                 "test@user.com",

@@ -20,7 +20,7 @@ public class Main {
         Properties property = new Properties();
 
         Date currentDate = new Date();
-        String defaultConfigFile = "config_" + currentDate.getTime() + ".properties";
+        String defaultConfigFile = "config/config_" + currentDate.getTime() + ".properties";
         property.setProperty("dbHost", "localhost");
         property.setProperty("dbPort", "27017");
         property.setProperty("httpHost", "localhost");
@@ -51,9 +51,11 @@ public class Main {
         try {
             InetSocketAddress address = new InetSocketAddress(host, port);
             HttpServer server = HttpServer.create(address, 0);
-            HttpContext apiContext = server.createContext("/web/", new WebInterfaceHandler());
+            HttpContext apiContext = server.createContext("/api/", new WebInterfaceHandler());
+            //apiContext.setAuthenticator();
             HttpContext authContext = server.createContext("/api/users/auth", new AuthHandler());
-            //authContext.setAuthenticator(new BasicAuth());
+            authContext.setAuthenticator(new BasicAuth("auth"));
+            server.setExecutor(null);
             server.start();
             logger.info("Server started on " + host + ":" + port);
         } catch (IOException e) {
