@@ -1,0 +1,103 @@
+.light-theme {
+    --color-main: #fa0;
+    --color-foreground: #020333;
+    --color-foregroung-light: #0F1196;
+    --color-background: #B0EDFF;
+    --color-background-dark: #15ABD6;
+}
+
+.dark-theme {
+    --color-main: #000321;
+    --color-foreground: #D68F00;
+    --color-foregroung-light: #465FA7;
+    --color-background: #071F45;
+    --color-background-dark: #090B5C;
+}
+
+body {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    color: var(--color-foreground);
+    margin: 0px;
+    background-color: var(--color-background);
+}
+
+header { 
+    display: block;
+    position: relative;
+    height: max-content;
+    background-color: var(--color-main);
+    text-align: center;
+}
+
+header > h1 {
+    font-weight: bold;
+    font-size: 128pt;
+    margin: 0;
+    vertical-align: middle;
+}
+
+footer {
+    text-align: center;
+    position: relative;
+}
+
+.login-area {
+    margin: 32px;
+    position: relative;
+    text-align: center;
+    height: 100%;
+}
+
+.login-fields {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.field {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-size: 36px;
+    color: var(--color-foreground);
+    background: none;
+    margin: 6px;
+    padding: 4px;
+    border: 0px;
+    border-bottom: 3px solid var(--color-foreground);
+}
+
+.field:focus {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-size: 36px;
+    background: none;
+    color: var(--color-foreground);
+    margin: 6px;
+    padding: 4px;
+    outline: none;
+    border-bottom: 3px solid var(--color-background-dark);
+}
+
+.button {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--color-foreground);
+    background-color: var(--color-main);
+    height: 76px;
+    width: 300px;
+    border: none;
+    border-radius: 16px;
+}
+
+.button:hover {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--color-main);
+    background-color: var(--color-foreground);
+    height: 76px;
+    width: 300px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
