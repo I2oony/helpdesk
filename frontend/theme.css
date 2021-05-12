@@ -1,0 +1,73 @@
+.light-theme {
+    --color-primary: #fa0;
+    --color-primary-light: #ffdc4a;
+    --color-primary-dark: #c67b00;
+    --color-on-primary: #003d00;
+
+    --color-secondary: #33691e;
+    --color-secondary-dark: #003d00;
+    --color-on-secondary: #fff176;
+
+    --color-surface: #c8e6c9;
+    --color-background: #629749;
+    --color-error: #ff3d00;
+    --color-shadow: #111;
+}
+
+.dark-theme {
+    --color-primary: #fa0;
+    --color-primary-light: #ffdc4a;
+    --color-primary-dark: #c67b00;
+    --color-on-primary: #003d00;
+
+    --color-secondary: #33691e;
+    --color-secondary-dark: #003d00;
+    --color-on-secondary: #fff176;
+
+    --color-surface: #c8e6c9;
+    --color-background: #629749;
+    --color-error: #ff3d00;
+}
+
+.font-header-1 {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 100;
+    font-size: 6rem;
+}
+
+.font-header-2 {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 100;
+    font-size: 3.75rem;
+}
+
+.font-subtitle-1 {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.font-subtitle-2 {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.font-button {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+}
+
+.z-axis-1 {
+    box-shadow: 0px 6px 6px var(--color-shadow);
+}
+
+.z-axis-2, .z-axis-1:hover {
+    box-shadow: 0px 8px 6px var(--color-shadow);
+}
+
+.z-axis-2:hover {
+    box-shadow: 0px 10px 6px var(--color-shadow);
+}
