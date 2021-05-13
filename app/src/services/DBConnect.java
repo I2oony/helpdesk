@@ -1,7 +1,5 @@
 package services;
 
-import java.net.ServerSocket;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,7 +91,11 @@ public class DBConnect {
 
     public static boolean addSession(Session session) {
         try {
-            Document document = Document.parse(session.toJson());
+            Document document = new Document();
+            document.append("token", session.getToken())
+                    .append("username", session.getUsername())
+                    .append("role", session.getRoleString())
+                    .append("validUntil", session.getValidUntil());
             sessionsCollection.insertOne(document);
             logger.info("Session successfully added.");
             return true;
@@ -103,10 +105,19 @@ public class DBConnect {
         }
     }
 
-    public static Date getSessionValidDate(String token) {
-        logger.info("Fetching session.");
+    public static Session getSession(String token) throws Exception {
+        logger.info("Fetching the session.");
         Document document = sessionsCollection.find(eq("token", token)).first();
-        return document.getDate("validUntil");
+        if (document!=null) {
+            return new Session(
+                    token,
+                    document.getString("username"),
+                    User.Role.valueOf(document.getString("role")),
+                    document.getDate("validUntil")
+            );
+        } else {
+            throw new Exception("Session either expired or doesn't exists.");
+        }
     }
 
     public static boolean deleteSession(String token) {

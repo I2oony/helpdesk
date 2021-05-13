@@ -42,8 +42,10 @@ public class AuthHandler implements HttpHandler {
 
             DBConnect.addSession(session);
 
-            Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
-            String responseString = responseBody.toJson(session);
+            Gson responseBody = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            String responseString = responseBody.toJson(token);
 
             responseHeaders.add("Content-Type", "application/json");
             httpExchange.sendResponseHeaders(200, responseString.length());

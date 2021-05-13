@@ -19,23 +19,25 @@ public class WebInterfaceHandler implements HttpHandler {
         String method = httpExchange.getRequestMethod();
         OutputStream responseStream = httpExchange.getResponseBody();
         Headers responseHeaders = httpExchange.getResponseHeaders();
+        String path = httpExchange.getRequestURI().getPath();
         logger.info("Received HTTP Request with method " + method +
-                ". Endpoint: " + httpExchange.getRequestURI().getPath());
+                ". Endpoint: " + path);
 
-        InputStream requestBody = httpExchange.getRequestBody();
+        switch (path) {
+            case "/api/users":
+                User user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
 
-        User testUser = DBConnect.getUser("admin");
+                Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
+                String responseString = responseBody.toJson(user);
 
-        Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
-        String responseString = responseBody.toJson(testUser);
-
-        switch (method) {
-            case "GET":
                 responseHeaders.add("Content-Type", "application/json");
                 httpExchange.sendResponseHeaders(200, responseString.length());
 
                 responseStream.write(responseString.getBytes(StandardCharsets.UTF_8));
                 responseStream.flush();
+                break;
+            case "/api/tickets":
+
                 break;
             default:
                 break;

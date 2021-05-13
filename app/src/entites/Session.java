@@ -1,7 +1,5 @@
 package entites;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import services.DBConnect;
 
 import java.util.Date;
@@ -20,9 +18,8 @@ public class Session {
     }
 
     public boolean checkSession() {
-        Date validDate = DBConnect.getSessionValidDate(token);
         Date now = new Date();
-        if (now.before(validDate)) {
+        if (now.before(validUntil)) {
             return true;
         } else {
             DBConnect.deleteSession(token);
@@ -34,8 +31,16 @@ public class Session {
         return token;
     }
 
-    public String toJson() {
-        Gson json = new GsonBuilder().setPrettyPrinting().create();
-        return json.toJson(this);
+    public String getUsername() {
+        return username;
     }
+
+    public String getRoleString() {
+        return role.toString();
+    }
+
+    public Date getValidUntil() {
+        return validUntil;
+    }
+
 }
