@@ -80,6 +80,65 @@ header {
     cursor: pointer;
 }
 
+.button-icon {
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+}
+
+.button-icon:hover {
+    cursor: pointer;
+}
+
 .error-message {
     color: var(--color-error);
+}
+
+.top-bar {
+    display: flex;
+    position: fixed;
+    z-index: 99;
+    width: 100%;
+    flex-direction: row;
+    background-color: var(--color-primary);
+    align-items: center;
+}
+
+.top-bar > * {
+    height: 4rem;
+    margin: 0.5rem 1rem;
+}
+
+.icons {
+    height: 3rem;
+    width: 3rem;
+}
+
+.menu, .menu-opened {
+    z-index: 90;
+    background-color: var(--color-secondary);
+    position: fixed;
+    width: 16rem;
+    height: 100vh;
+    top: 5rem;
+}
+
+.menu > li, .menu-opened > li {
+    list-style-type: none;
+}
+
+.menu ul, .menu-opened ul {
+    padding: 0;
+    padding-left: 2rem;
+}
+
+.menu {
+    transition: left 0.2s;
+    left: -16rem;
+}
+
+.menu-opened {
+    transition: left 0.5s;
+    left: 0rem;
 }
