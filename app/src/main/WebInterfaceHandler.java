@@ -5,6 +5,8 @@ import com.sun.net.httpserver.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Locale;
 
 import services.CustomLogger;
 import entites.*;
@@ -16,32 +18,38 @@ public class WebInterfaceHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         logger = new CustomLogger(WebInterfaceHandler.class.getName());
 
-        String method = httpExchange.getRequestMethod();
         OutputStream responseStream = httpExchange.getResponseBody();
         Headers responseHeaders = httpExchange.getResponseHeaders();
+
+        String method = httpExchange.getRequestMethod();
         String path = httpExchange.getRequestURI().getPath();
+        String remoteAddr = httpExchange.getRequestHeaders()
+                                        .getFirst("X-Real-IP");
         logger.info("Received HTTP Request with method " + method +
-                ". Endpoint: " + path);
+                ". Endpoint: " + path + ". From: " + remoteAddr);
+
+        String params = httpExchange.getRequestURI().getQuery();
+
+        Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
+        StringBuilder responseString = new StringBuilder();
 
         switch (path) {
             case "/api/users":
                 User user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
-
-                Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
-                String responseString = responseBody.toJson(user);
-
-                responseHeaders.add("Content-Type", "application/json");
-                httpExchange.sendResponseHeaders(200, responseString.length());
-
-                responseStream.write(responseString.getBytes(StandardCharsets.UTF_8));
-                responseStream.flush();
+                responseString.append(responseBody.toJson(user));
                 break;
             case "/api/tickets":
-
+                String[] paramsArr = params.split("&");
+                logger.info(Arrays.toString(paramsArr));
                 break;
             default:
                 break;
         }
+
+        responseHeaders.add("Content-Type", "application/json");
+        httpExchange.sendResponseHeaders(200, responseString.length());
+        responseStream.write(responseString.toString().getBytes(StandardCharsets.UTF_8));
+        responseStream.flush();
         httpExchange.close();
     }
 }
