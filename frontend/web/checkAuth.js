@@ -8,7 +8,7 @@ const getUser = async () => {
 
             let body = document.querySelector('body');
             let script = document.createElement('script');
-            script.src = "interface.js";
+            script.src = "../interface.js";
             body.appendChild(script);
         })
         .catch(function (error) {

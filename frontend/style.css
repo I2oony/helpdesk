@@ -133,6 +133,15 @@ header {
     padding-left: 2rem;
 }
 
+.menu-opened ul:hover {
+    cursor: pointer;
+}
+
+.menu a, .menu-opened a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .menu {
     transition: left 0.2s;
     left: -16rem;
