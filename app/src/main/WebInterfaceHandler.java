@@ -6,7 +6,6 @@ import com.sun.net.httpserver.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Locale;
 
 import services.CustomLogger;
 import entites.*;
@@ -37,6 +36,11 @@ public class WebInterfaceHandler implements HttpHandler {
             case "/api/users":
                 User user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
                 responseString.append(responseBody.toJson(user));
+                break;
+            case "/api/users/logout":
+                String cookies = httpExchange.getRequestHeaders().get("Cookie").get(0);
+                String token = cookies.split("=")[1];
+                DBConnect.deleteSession(token);
                 break;
             case "/api/tickets":
                 String[] paramsArr = params.split("&");

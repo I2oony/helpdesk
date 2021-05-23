@@ -96,6 +96,13 @@ function openMenu() {
 }
 
 function logout() {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    window.location.pathname = "/";
+    let url = "https://i2oony.com/api/users/logout";
+
+    axios.get(url)
+    .then(function (response) {
+        window.location.pathname = "/";
+    })
+    .catch(function (error) {
+        console.log();
+    })
 }

@@ -37,9 +37,9 @@ function checkAuth() {
 
     axios.get(url)
         .then(function (response) {
-            window.location.pathname = "/web/dashboard"
+            window.location.pathname = "/web/dashboard";
         })
         .catch(function (error) {
-            console.log()
+            console.log();
         })
 }

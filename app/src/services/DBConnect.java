@@ -164,4 +164,9 @@ public class DBConnect {
         logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'ticket' part completed.");
     }
 
+    @Test
+    public void sessionTest() {
+        logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'session' part completed.");
+    }
+
 }

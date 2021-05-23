@@ -27,7 +27,7 @@ public class User {
         return role;
     }
 
-    public boolean setPassword(String newPassword){
+    public boolean setPassword(String newPassword) {
         password = newPassword;
         return true;
     }
