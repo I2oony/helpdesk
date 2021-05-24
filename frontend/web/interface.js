@@ -119,8 +119,7 @@ function buildProfilePage(user) {
     profilePage.id = "profile-page";
     profilePage.className = "main-content";
 
-    let infoBlock = document.createElement('div');
-    infoBlock.className = "surface";
+    let infoBlock = buildBlock("info-block");
     infoBlock.append(buildBlockHeader("Информация о пользователе"));
 
     let table = document.createElement('table');
@@ -130,9 +129,7 @@ function buildProfilePage(user) {
     table.append(buildTableRow("font-header-6", "Электронная почта", "info-email", email));
     infoBlock.append(table);
 
-    let changePasswordBlock = document.createElement('div');
-    changePasswordBlock.className = "surface";
-    changePasswordBlock.id = "change-password-form";
+    let changePasswordBlock = buildBlock("change-password-block");
     changePasswordBlock.append(buildBlockHeader("Смена пароля"));
     changePasswordBlock.append(buildInputField("password", "profile-field-old-password", "Старый пароль"));
     changePasswordBlock.append(buildInputField("password", "profile-field-new-password", "Новый пароль"));
@@ -187,12 +184,7 @@ function changePass() {
         config.data = JSON.stringify(body);
         axios(config)
             .then(function (response) {
-                var form = document.getElementById('change-password-form');
-                var successMsg = document.createElement('span');
-                successMsg.textContent = "Пароль успешно изменён!";
-                successMsg.className = "font-subtitle-1";
-                successMsg.id = "success-message";
-                form.firstElementChild.after(successMsg);
+                showSuccess("Пароль успешно изменён!");
             })
             .catch(function (response) {
                 showError("Неверно указан старый пароль!");
@@ -202,18 +194,39 @@ function changePass() {
     }
 
     function showError(text) {
-        if (document.getElementById("error-message") == null) {
-            var form = document.getElementById('change-password-form');
+        if (document.getElementById("result-message") == null) {
+            var form = document.getElementById('change-password-block');
             var errorMsg = document.createElement('span');
             errorMsg.textContent = text;
             errorMsg.className = "error-message font-subtitle-1";
-            errorMsg.id = "error-message";
+            errorMsg.id = "result-message";
             form.firstElementChild.after(errorMsg);
         } else {
-            var errorMsg = document.getElementById("error-message");
+            var errorMsg = document.getElementById("result-message");
             errorMsg.textContent = text;
         }
     }
+
+    function showSuccess(text) {
+        if (document.getElementById("result-message") == null) {
+            var form = document.getElementById('change-password-block');
+            var successMsg = document.createElement('span');
+            successMsg.textContent = text;
+            successMsg.className = "font-subtitle-1";
+            successMsg.id = "result-message";
+            form.firstElementChild.after(successMsg);
+        } else {
+            var errorMsg = document.getElementById("result-message");
+            errorMsg.textContent = text;
+        }
+    }
+}
+
+function buildBlock(id) {
+    var div = document.createElement('div');
+    div.id = id;
+    div.className = "surface";
+    return div;
 }
 
 function buildBlockHeader(title) {
