@@ -37,6 +37,7 @@ public class Main {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(defaultConfigFile);
             property.store(fileOutputStream, "Runtime config");
+            fileOutputStream.close();
         } catch (Exception e) {
             logger.warning("An error while saving the default configuration to file.");
         }
