@@ -115,9 +115,7 @@ function buildProfilePage(user) {
     var firstName = user["firstName"];
     var lastName = user["lastName"];
 
-    let profilePage = document.createElement('div');
-    profilePage.id = "profile-page";
-    profilePage.className = "main-content";
+    let profilePage = buildMainContent("profile-page");
 
     let infoBlock = buildBlock("info-block");
     infoBlock.append(buildBlockHeader("Информация о пользователе"));
@@ -220,6 +218,13 @@ function changePass() {
             errorMsg.textContent = text;
         }
     }
+}
+
+function buildMainContent(id) {
+    var div = document.createElement('div');
+    div.id = id;
+    div.className = "main-content";
+    return div;
 }
 
 function buildBlock(id) {
