@@ -154,6 +154,7 @@ h3 {
 .menu-opened {
     transition: left 0.5s;
     left: 0rem;
+    box-shadow: 5000px 0 0 5000px rgba(17, 17, 17, 0.5);
 }
 
 .surface {

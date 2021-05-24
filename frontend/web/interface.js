@@ -134,9 +134,9 @@ function buildProfilePage(user) {
     changePasswordBlock.className = "surface";
     changePasswordBlock.id = "change-password-form";
     changePasswordBlock.append(buildBlockHeader("Смена пароля"));
-    changePasswordBlock.append(buildInputField("profile-field-old-password", "Старый пароль"));
-    changePasswordBlock.append(buildInputField("profile-field-new-password", "Новый пароль"));
-    changePasswordBlock.append(buildInputField("profile-field-repeat-password", "Повтор пароля"));
+    changePasswordBlock.append(buildInputField("password", "profile-field-old-password", "Старый пароль"));
+    changePasswordBlock.append(buildInputField("password", "profile-field-new-password", "Новый пароль"));
+    changePasswordBlock.append(buildInputField("password", "profile-field-repeat-password", "Повтор пароля"));
 
     let button = document.createElement('button');
     button.className = "button-text z-axis-1 font-button";
@@ -149,14 +149,6 @@ function buildProfilePage(user) {
     profilePage.append(changePasswordBlock);
 
     document.body.append(profilePage);
-}
-
-// Block header
-function buildBlockHeader(title) {
-    var header = document.createElement('h3');
-    header.className = "font-header-3";
-    header.textContent = title;
-    return header;
 }
 
 // Profile page - info block
@@ -175,16 +167,6 @@ function buildTableRow(className, title, id, textContent) {
     tr.append(td2);
 
     return tr;
-}
-
-// Profile page - change password block
-function buildInputField(id, placeholder) {
-    var input = document.createElement('input');
-    input.type = "password";
-    input.className = "field font-subtitle-1";
-    input.id = id;
-    input.placeholder = placeholder;
-    return input;
 }
 
 function changePass() {
@@ -232,4 +214,20 @@ function changePass() {
             errorMsg.textContent = text;
         }
     }
+}
+
+function buildBlockHeader(title) {
+    var header = document.createElement('h3');
+    header.className = "font-header-3";
+    header.textContent = title;
+    return header;
+}
+
+function buildInputField(type, id, placeholder) {
+    var input = document.createElement('input');
+    input.type = type;
+    input.className = "field font-subtitle-1";
+    input.id = id;
+    input.placeholder = placeholder;
+    return input;
 }
