@@ -97,15 +97,16 @@ function openMenu() {
 }
 
 function logout() {
-    let url = "https://i2oony.com/api/users/logout";
+    config.method = "delete";
+    config.url = "/api/users/logout";
 
-    axios.get(url)
-    .then(function (response) {
-        window.location.pathname = "/";
-    })
-    .catch(function (error) {
-        console.log();
-    })
+    axios(config)
+        .then(function (response) {
+            window.location.pathname = "/";
+        })
+        .catch(function (error) {
+            console.log();
+        })
 }
 
 function buildProfilePage(user) {
@@ -187,21 +188,48 @@ function buildInputField(id, placeholder) {
 }
 
 function changePass() {
+    config.method = "patch";
+    config.url = "/api/users/changeInfo"
+
     var oldPass = document.getElementById('profile-field-old-password').value;
     var newPass = document.getElementById('profile-field-new-password').value;
     var repeatPass = document.getElementById('profile-field-repeat-password').value;
-
-    if (newPass == repeatPass) {
-
+    
+    if (newPass.length < 8) {
+        showError("Пароль менее 8 символов!");
+    } else if (newPass == repeatPass) {
+        var body = {
+            oldPassword: oldPass,
+            newPassword: newPass
+        }
+        config.data = JSON.stringify(body);
+        axios(config)
+            .then(function (response) {
+                var form = document.getElementById('change-password-form');
+                var successMsg = document.createElement('span');
+                successMsg.textContent = "Пароль успешно изменён!";
+                successMsg.className = "font-subtitle-1";
+                successMsg.id = "success-message";
+                form.firstElementChild.after(successMsg);
+            })
+            .catch(function (response) {
+                showError("Неверно указан старый пароль!");
+            });
     } else {
+        showError("Пароли несовпадают, попробуйте снова!");
+    }
+
+    function showError(text) {
         if (document.getElementById("error-message") == null) {
             var form = document.getElementById('change-password-form');
-            form.firstElementChild
             var errorMsg = document.createElement('span');
-            errorMsg.textContent = "Пароли несовпадают, попробуйте снова!";
+            errorMsg.textContent = text;
             errorMsg.className = "error-message font-subtitle-1";
             errorMsg.id = "error-message";
             form.firstElementChild.after(errorMsg);
+        } else {
+            var errorMsg = document.getElementById("error-message");
+            errorMsg.textContent = text;
         }
     }
 }

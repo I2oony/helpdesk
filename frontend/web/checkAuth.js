@@ -1,8 +1,12 @@
-let url = "https://i2oony.com/api/users";
+var config = {};
+config.baseUrl = "https://i2oony.com"
+
 var user;
 
 const getUser = async () => {
-    await axios.get(url)
+    config.method = "get";
+    config.url = "/api/users"
+    await axios(config)
         .then(function (response) {
             user = response.data;
 
