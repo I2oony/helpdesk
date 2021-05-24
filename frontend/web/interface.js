@@ -11,6 +11,7 @@ function buildPage(user) {
             break;
         case "/web/profile/":
             title = "Профиль";
+            buildProfilePage(user);
             break;
         case "/web/statistics/":
             title = "Статистика";
@@ -40,7 +41,7 @@ function buildTopBar(pageTitle) {
     let p = document.createElement('p');
     p.className = "font-header-3";
     p.id = "page-title";
-    p.innerHTML = pageTitle;
+    p.textContent = pageTitle;
 
     let div = document.createElement('div');
     div.className="top-bar"
@@ -55,7 +56,7 @@ function buildMenuItem(link, title) {
     a.href = link;
     var ul = document.createElement('ul');
     ul.className = "font-header-6";
-    ul.innerHTML = title;
+    ul.textContent = title;
     a.appendChild(ul);
     return a;
 }
@@ -79,7 +80,7 @@ function buildMenu(role) {
     }
     let logoutUl = document.createElement('ul');
     logoutUl.className = "font-header-6";
-    logoutUl.innerHTML = "Выход";
+    logoutUl.textContent = "Выход";
     logoutUl.id = "logout";
     menuLi.append(logoutUl)
     menu.appendChild(menuLi);
@@ -105,4 +106,102 @@ function logout() {
     .catch(function (error) {
         console.log();
     })
+}
+
+function buildProfilePage(user) {
+    var username = user["username"];
+    var email = user["email"];
+    var firstName = user["firstName"];
+    var lastName = user["lastName"];
+
+    let profilePage = document.createElement('div');
+    profilePage.id = "profile-page";
+    profilePage.className = "main-content";
+
+    let infoBlock = document.createElement('div');
+    infoBlock.className = "surface";
+    infoBlock.append(buildBlockHeader("Информация о пользователе"));
+
+    let table = document.createElement('table');
+    table.id = "info-table";
+    table.append(buildTableRow("font-header-6", "Логин", "info-username", username));
+    table.append(buildTableRow("font-header-6", "Имя и фамилия", "info-name", firstName+" "+lastName));
+    table.append(buildTableRow("font-header-6", "Электронная почта", "info-email", email));
+    infoBlock.append(table);
+
+    let changePasswordBlock = document.createElement('div');
+    changePasswordBlock.className = "surface";
+    changePasswordBlock.id = "change-password-form";
+    changePasswordBlock.append(buildBlockHeader("Смена пароля"));
+    changePasswordBlock.append(buildInputField("profile-field-old-password", "Старый пароль"));
+    changePasswordBlock.append(buildInputField("profile-field-new-password", "Новый пароль"));
+    changePasswordBlock.append(buildInputField("profile-field-repeat-password", "Повтор пароля"));
+
+    let button = document.createElement('button');
+    button.className = "button-text z-axis-1 font-button";
+    button.textContent = "Сменить";
+    button.onclick = changePass;
+
+    changePasswordBlock.append(button);
+
+    profilePage.append(infoBlock);
+    profilePage.append(changePasswordBlock);
+
+    document.body.append(profilePage);
+}
+
+// Block header
+function buildBlockHeader(title) {
+    var header = document.createElement('h3');
+    header.className = "font-header-3";
+    header.textContent = title;
+    return header;
+}
+
+// Profile page - info block
+function buildTableRow(className, title, id, textContent) {
+    var td1 = document.createElement('td');
+    td1.className = className;
+    td1.textContent = title;
+
+    var td2 = document.createElement('td');
+    td2.className = className;
+    td2.id = id;
+    td2.textContent = textContent;
+    
+    var tr = document.createElement('tr');
+    tr.append(td1);
+    tr.append(td2);
+
+    return tr;
+}
+
+// Profile page - change password block
+function buildInputField(id, placeholder) {
+    var input = document.createElement('input');
+    input.type = "password";
+    input.className = "field font-subtitle-1";
+    input.id = id;
+    input.placeholder = placeholder;
+    return input;
+}
+
+function changePass() {
+    var oldPass = document.getElementById('profile-field-old-password').value;
+    var newPass = document.getElementById('profile-field-new-password').value;
+    var repeatPass = document.getElementById('profile-field-repeat-password').value;
+
+    if (newPass == repeatPass) {
+
+    } else {
+        if (document.getElementById("error-message") == null) {
+            var form = document.getElementById('change-password-form');
+            form.firstElementChild
+            var errorMsg = document.createElement('span');
+            errorMsg.textContent = "Пароли несовпадают, попробуйте снова!";
+            errorMsg.className = "error-message font-subtitle-1";
+            errorMsg.id = "error-message";
+            form.firstElementChild.after(errorMsg);
+        }
+    }
 }
