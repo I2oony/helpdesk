@@ -26,7 +26,7 @@ authForm.onsubmit = function() {
             let span = document.createElement('span');
             span.className = "error-message font-subtitle-1";
             span.id = "id-error-message";
-            span.innerHTML = "Incorrect login or password!";
+            span.textContent = "Неверный логин или пароль!";
             authForm.prepend(span);
         }
     })

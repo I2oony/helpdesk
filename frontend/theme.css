@@ -79,13 +79,13 @@
 }
 
 .z-axis-1 {
-    box-shadow: 0px 6px 6px var(--color-shadow);
+    box-shadow: 0px 4px 6px var(--color-shadow);
 }
 
 .z-axis-2, .z-axis-1:hover {
-    box-shadow: 0px 8px 6px var(--color-shadow);
+    box-shadow: 0px 6px 6px var(--color-shadow);
 }
 
 .z-axis-2:hover {
-    box-shadow: 0px 10px 6px var(--color-shadow);
+    box-shadow: 0px 8px 6px var(--color-shadow);
 }
