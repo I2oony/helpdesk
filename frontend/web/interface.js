@@ -231,6 +231,15 @@ async function buildSystemPage() {
     createUserBlock.append(buildDropdown(roles));
     createUserBlock.append(buildButton("Создать", createUser));
 
+    let usersListBlock = buildUserListBlock();
+
+    systemPage.append(createUserBlock);
+    systemPage.append(usersListBlock);
+
+    document.body.append(systemPage);
+}
+
+function buildUserListBlock() {
     let usersListBlock = buildBlock("users-list-block");
     usersListBlock.append(buildBlockHeader("Список пользователей"));
     let usersList = await fetchUsersList();
@@ -242,16 +251,12 @@ async function buildSystemPage() {
         lastName: "Фамилия",
         email: "Электронная почта",
         role: "Роль"}
-    usersTable.append(buildUserRow(-1, header));
+    usersTable.append(buildUserRow(header, "font-header-4"));
     for (user in usersList) {
-        usersTable.append(buildUserRow(user, usersList[user]));
+        usersTable.append(buildUserRow(usersList[user], "font-header-6"));
     }
     usersListBlock.append(usersTable);
-
-    systemPage.append(createUserBlock);
-    systemPage.append(usersListBlock);
-
-    document.body.append(systemPage);
+    return usersListBlock
 }
 
 async function fetchUsersList() {
@@ -271,14 +276,10 @@ async function fetchUsersList() {
     return body;
 }
 
-function buildUserRow(num, user) {
+function buildUserRow(user, className) {
     var tr = document.createElement('tr');
 
-    var className = "font-header-6";
-
-    var td0 = document.createElement('td');
-    td0.textContent = parseInt(num) + 1;
-    td0.className = className;
+    var className = className;
 
     var td1 = document.createElement('td');
     td1.textContent = user["username"];
@@ -300,7 +301,6 @@ function buildUserRow(num, user) {
     td5.textContent = user["role"];
     td5.className = className;
 
-    tr.append(td0);
     tr.append(td1);
     tr.append(td2);
     tr.append(td3);
