@@ -3,6 +3,7 @@ package services;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mongodb.client.MongoCursor;
 import entites.Session;
 import org.junit.*;
 import com.mongodb.MongoClient;
@@ -55,6 +56,27 @@ public class DBConnect {
                 document.getString("firstName"),
                 document.getString("lastName")
         );
+    }
+
+    public static User[] getUsersList() throws Exception {
+        int length = (int) usersCollection.count();
+        logger.info("Fetching the users list. Total users: " + length);
+        User[] users = new User[length];
+        int i = 0;
+        try (MongoCursor<Document> cursor = usersCollection.find().iterator()) {
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+                users[i] = new User(
+                        document.getString("username"),
+                        document.getString("email"),
+                        User.Role.valueOf(document.getString("role")),
+                        document.getString("firstName"),
+                        document.getString("lastName")
+                );
+                i++;
+            }
+        }
+        return users;
     }
 
     public static String getUsersPassword(String username) {

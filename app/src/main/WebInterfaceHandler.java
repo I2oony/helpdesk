@@ -44,6 +44,13 @@ public class WebInterfaceHandler implements HttpHandler {
                 user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
                 responseString.append(responseBody.toJson(user));
                 break;
+            case "/api/users/list":
+                try {
+                    responseString.append(responseBody.toJson(DBConnect.getUsersList()));
+                } catch (Exception e) {
+                    logger.warning("Something went wrong while fetching the users list. See the full error below: " + e);
+                }
+                break;
             case "/api/users/logout":
                 if (method.equals("DELETE")) {
                     String cookies = httpExchange.getRequestHeaders().get("Cookie").get(0);
