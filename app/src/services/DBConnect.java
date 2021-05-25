@@ -47,15 +47,20 @@ public class DBConnect {
     }
 
     public static User getUser(String username) {
-        logger.info("Fetching the user with username: " + username);
-        Document document = usersCollection.find(eq("username", username)).first();
-        return new User(
-                document.getString("username"),
-                document.getString("email"),
-                User.Role.valueOf(document.getString("role")),
-                document.getString("firstName"),
-                document.getString("lastName")
-        );
+        try {
+            logger.info("Fetching the user with username: " + username);
+            Document document = usersCollection.find(eq("username", username)).first();
+            return new User(
+                    document.getString("username"),
+                    document.getString("email"),
+                    User.Role.valueOf(document.getString("role")),
+                    document.getString("firstName"),
+                    document.getString("lastName")
+            );
+        } catch (Exception e) {
+            logger.info("No such user exist: " + username);
+            return null;
+        }
     }
 
     public static User[] getUsersList() throws Exception {

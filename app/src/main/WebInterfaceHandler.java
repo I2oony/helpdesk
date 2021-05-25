@@ -75,7 +75,15 @@ public class WebInterfaceHandler implements HttpHandler {
                     }
                 }
                 break;
-                // TODO Create user
+            case "/api/users/create":
+                User newUser = new Gson().fromJson(requestReader, User.class);
+                if (DBConnect.getUser(newUser.getUsername()) == null) {
+                    DBConnect.insertUser(newUser);
+                    responseCode = 201;
+                } else {
+                    responseCode = 403;
+                }
+                break;
             case "/api/tickets":
                 String[] paramsArr = params.split("&");
                 logger.info(Arrays.toString(paramsArr));
