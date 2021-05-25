@@ -45,7 +45,7 @@ h3 {
     align-items: center;
 }
 
-.field {
+.field, .dropdown-list {
     color: var(--color-on-primary);
     background: none;
     width: 16rem;
@@ -55,7 +55,7 @@ h3 {
     border-radius: 0.5rem;
 }
 
-.field:focus {
+.field:focus, .dropdown-list:focus {
     background: none;
     color: var(--color-on-primary);
     padding: 0.5rem;
