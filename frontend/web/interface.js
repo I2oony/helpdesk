@@ -167,8 +167,10 @@ function changePass() {
     var newPass = document.getElementById('profile-field-new-password').value;
     var repeatPass = document.getElementById('profile-field-repeat-password').value;
     
+    var msgAfter = document.getElementById('change-password-block').firstElementChild;
+
     if (newPass.length < 8) {
-        showError("Пароль менее 8 символов!");
+        showError("Пароль менее 8 символов!", msgAfter);
     } else if (newPass == repeatPass) {
         var body = {
             oldPassword: oldPass,
@@ -177,41 +179,41 @@ function changePass() {
         config.data = JSON.stringify(body);
         axios(config)
             .then(function (response) {
-                showSuccess("Пароль успешно изменён!");
+                showSuccess("Пароль успешно изменён!", msgAfter);
             })
             .catch(function (response) {
-                showError("Неверно указан старый пароль!");
+                showError("Неверно указан старый пароль!", msgAfter);
             });
     } else {
-        showError("Пароли несовпадают, попробуйте снова!");
+        showError("Пароли несовпадают, попробуйте снова!", msgAfter);
     }
+}
 
-    function showError(text) {
-        if (document.getElementById("result-message") == null) {
-            var form = document.getElementById('change-password-block');
-            var errorMsg = document.createElement('span');
-            errorMsg.textContent = text;
-            errorMsg.className = "error-message font-subtitle-1";
-            errorMsg.id = "result-message";
-            form.firstElementChild.after(errorMsg);
-        } else {
-            var errorMsg = document.getElementById("result-message");
-            errorMsg.textContent = text;
-        }
+function showError(text, insertAfter) {
+    if (document.getElementById("result-message") == null) {
+        var errorMsg = document.createElement('span');
+        errorMsg.textContent = text;
+        errorMsg.classList.add("error-message");
+        errorMsg.className = "error-message font-subtitle-1";
+        errorMsg.id = "result-message";
+        insertAfter.after(errorMsg);
+    } else {
+        var errorMsg = document.getElementById("result-message");
+        errorMsg.textContent = text;
     }
+}
 
-    function showSuccess(text) {
-        if (document.getElementById("result-message") == null) {
-            var form = document.getElementById('change-password-block');
-            var successMsg = document.createElement('span');
-            successMsg.textContent = text;
-            successMsg.className = "font-subtitle-1";
-            successMsg.id = "result-message";
-            form.firstElementChild.after(successMsg);
-        } else {
-            var errorMsg = document.getElementById("result-message");
-            errorMsg.textContent = text;
-        }
+function showSuccess(text, insertAfter) {
+    if (document.getElementById("result-message") == null) {
+        var successMsg = document.createElement('span');
+        successMsg.textContent = text;
+        successMsg.classList.remove("error-message");
+        successMsg.className = "font-subtitle-1";
+        successMsg.id = "result-message";
+        insertAfter.after(successMsg);
+    } else {
+        var errorMsg = document.getElementById("result-message");
+        errorMsg.textContent = text;
     }
 }
 
@@ -228,10 +230,10 @@ async function buildSystemPage() {
         {value: "client", text: "Клиент"},
         {value: "operator", text: "Оператор"},
         {value: "admin", text: "Администратор"}];
-    createUserBlock.append(buildDropdown(roles));
+    createUserBlock.append(buildDropdown("role", roles));
     createUserBlock.append(buildButton("Создать", createUser));
 
-    let usersListBlock = buildUserListBlock();
+    let usersListBlock = await buildUserListBlock();
 
     systemPage.append(createUserBlock);
     systemPage.append(usersListBlock);
@@ -239,7 +241,7 @@ async function buildSystemPage() {
     document.body.append(systemPage);
 }
 
-function buildUserListBlock() {
+async function buildUserListBlock() {
     let usersListBlock = buildBlock("users-list-block");
     usersListBlock.append(buildBlockHeader("Список пользователей"));
     let usersList = await fetchUsersList();
@@ -310,7 +312,7 @@ function buildUserRow(user, className) {
     return tr;
 }
 
-function createUser() {
+async function createUser() {
     config.method = "post";
     config.url = "/api/users/create";
     
@@ -318,6 +320,7 @@ function createUser() {
     var firstName = document.getElementById("first-name").value;
     var lastName = document.getElementById("last-name").value;
     var email = document.getElementById("email").value;
+    var role = document.getElementById("role").value;
 
     var body = {
         username: username,
@@ -328,13 +331,22 @@ function createUser() {
     };
     config.data = JSON.stringify(body);
 
+    var msgAfter = document.getElementById("create-user-block").firstElementChild;
+
     axios(config)
         .then(function (response) {
-            
+            showSuccess("Пользователь успешно создан!", msgAfter);
         })
         .catch(function (response) {
-            
+            console.log(response);
+            showError("Такой пользователь уже существует!", msgAfter);
         });
+    
+    var systemPage = document.getElementById("system-page");
+    var usersListBlock = document.getElementById("users-list-block");
+    usersListBlock.remove();
+    usersListBlock = await buildUserListBlock();
+    systemPage.append(usersListBlock);
 }
 
 function buildMainContent(id) {
@@ -376,9 +388,10 @@ function buildButton(title, action) {
 }
 
 // Array of following elements: {value: "some_value", text: "some_text"}
-function buildDropdown(options) {
+function buildDropdown(id, options) {
     var select = document.createElement('select');
-    select.className = "dropdown-list";
+    select.id = id;
+    select.className = "dropdown-list font-subtitle-1";
     for (option in options) {
         var opt = document.createElement('option');
         opt.value = options[option]["value"];
