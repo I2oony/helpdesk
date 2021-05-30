@@ -8,6 +8,7 @@ function buildPage(user) {
     switch (path) {
         case "/web/dashboard/":
             title = "Панель";
+            buildDashboardPage();
             break;
         case "/web/profile/":
             title = "Профиль";
@@ -108,6 +109,99 @@ function logout() {
         .catch(function (error) {
             console.log();
         })
+}
+
+async function buildDashboardPage() {
+    var dashboardPage = buildMainContent("dashboard-page");
+    var ticketsListBlock = buildBlock("tickets-list");
+
+    ticketsListBlock.classList.add("font-header-6");
+
+    var header = {
+        id: "No.",
+        title: "Тема",
+        requester: "Отправитель",
+        state: "Состояние",
+        time: "Время"
+    }
+    ticketsListBlock.append(buildTicketRow(header));
+    var ticketList = await fetchTicketsList();
+    for (ticket in ticketList) {
+        ticketsListBlock.append(buildTicketRow(ticketList[ticket]));
+    }
+
+    dashboardPage.append(ticketsListBlock);
+
+    document.body.append(dashboardPage);
+}
+
+function buildTicketRow(ticketInfo) {
+    var ticketDiv = document.createElement('div');
+    ticketDiv.className = "ticket";
+
+    var numDiv = document.createElement('div');
+    numDiv.className = "ticket-num";
+    numDiv.textContent = ticketInfo.id;
+    ticketDiv.append(numDiv);
+
+    var rowsDiv = document.createElement('div');
+    rowsDiv.className = "rows";
+
+    var firstRowDiv = document.createElement('div');
+    firstRowDiv.className = "row";
+
+    var firstColDiv = document.createElement('div');
+    firstColDiv.className = "col1";
+    firstColDiv.textContent = ticketInfo.title;
+    var secondColDiv = document.createElement('div');
+    secondColDiv.className = "col2";
+    secondColDiv.textContent = ticketInfo.requester;
+    var thirdColDiv = document.createElement('div');
+    thirdColDiv.className = "col1";
+    thirdColDiv.textContent = ticketInfo.state;
+    var fourthColDiv = document.createElement('div');
+    fourthColDiv.className = "col1";
+    if (ticketInfo.time == null){
+        fourthColDiv.textContent = ticketInfo.messages[0].time.slice(13, 18);
+    } else {
+        fourthColDiv.textContent = ticketInfo.time;
+    }
+    // May 20, 2021 12:05:31 AM
+
+    firstRowDiv.append(firstColDiv);
+    firstRowDiv.append(secondColDiv);
+    firstRowDiv.append(thirdColDiv);
+    firstRowDiv.append(fourthColDiv);
+
+    rowsDiv.append(firstRowDiv);
+
+    if (ticketInfo.operator != null) {
+        var secondRowDiv = document.createElement('div');
+        secondRowDiv.className = "row";
+        secondRowDiv.textContent = ticketInfo.operator;
+        rowsDiv.append(secondRowDiv);
+    }
+
+    ticketDiv.append(rowsDiv);
+
+    return ticketDiv;
+}
+
+async function fetchTicketsList() {
+    config.method = 'get';
+    config.url = "/api/tickets";
+
+    var body = null;
+
+    await axios(config)
+        .then(function (response) {
+            body = response.data;
+        })
+        .catch(function (response) {
+            body = null;
+        });
+    
+    return body;
 }
 
 function buildProfilePage(user) {
