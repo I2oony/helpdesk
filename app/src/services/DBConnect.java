@@ -156,7 +156,12 @@ public class DBConnect {
                 Document document = cursor.next();
                 Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
                 Message[] messages = new Message[1];
-                messages[0] = new Gson().fromJson(messageDoc.toJson(), Message.class);
+                messages[0] = new Message(
+                        messageDoc.getInteger("id"),
+                        messageDoc.getString("from"),
+                        messageDoc.getString("text"),
+                        messageDoc.getDate("date")
+                );
                 tickets[i] = new Ticket(
                         document.getInteger("ticketId"),
                         document.getString("title"),
