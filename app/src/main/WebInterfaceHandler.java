@@ -85,8 +85,13 @@ public class WebInterfaceHandler implements HttpHandler {
                 }
                 break;
             case "/api/tickets":
-                String[] paramsArr = params.split("&");
-                logger.info(Arrays.toString(paramsArr));
+                try {
+                    String username = httpExchange.getPrincipal().getUsername();
+                    Ticket[] tickets = DBConnect.getTicketsList(username);
+                    responseString.append(responseBody.toJson(tickets));
+                } catch (Exception e) {
+                    logger.warning(e.getMessage());
+                }
                 break;
             default:
                 break;

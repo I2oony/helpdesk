@@ -1,10 +1,13 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gson.Gson;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCursor;
-import entites.Session;
+import org.bson.BsonDocument;
 import org.junit.*;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
@@ -12,9 +15,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import entites.User;
+import entites.*;
 
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
 
 public class DBConnect {
     static CustomLogger logger;
@@ -114,6 +118,58 @@ public class DBConnect {
             logger.warning("An error occurred while deleting a user - " + e.getMessage());
             return false;
         }
+    }
+
+    public static Ticket[] getTicketsList(String username) {
+        logger.info("Fetching the tickets list.");
+        User requester = getUser(username);
+        Ticket[] tickets;
+        String[] searchQuery = new String[2];
+        switch (requester.getRole()) {
+            case admin:
+                searchQuery = null;
+                break;
+            case operator:
+                searchQuery[0] = "operator";
+                searchQuery[1] = username;
+                break;
+            case client:
+                searchQuery[0] = "requester";
+                searchQuery[1] = username;
+                break;
+            default:
+                tickets = null;
+                logger.warning("Error while getting the tickets list requester.");
+                break;
+        }
+
+        int i = 0;
+        try (MongoCursor<Document> cursor = ticketsCollection
+                .find(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1))
+                .projection(fields(include("ticketId", "title", "requester", "state", "messages"),
+                            slice("messages", -1)))
+                .sort(new BasicDBObject("ticketId", 1))
+                .iterator()) {
+            int length = (int) ticketsCollection.count(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1));
+            tickets = new Ticket[length];
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+                Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
+                Message[] messages = new Message[1];
+                messages[0] = new Gson().fromJson(messageDoc.toJson(), Message.class);
+                tickets[i] = new Ticket(
+                        document.getInteger("ticketId"),
+                        document.getString("title"),
+                        document.getString("requester"),
+                        document.get("operator", String[].class),
+                        document.getString("state"),
+                        messages
+                );
+                i++;
+            }
+        }
+
+        return tickets;
     }
 
     public static boolean addSession(Session session) {

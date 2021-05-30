@@ -21,6 +21,14 @@ public class Ticket {
         state = "created";
     }
 
-    // TODO: Creating an instance of a class for an existing ticket.
-
+    // Creating an instance of a class for an existing ticket.
+    public Ticket(int id, String title, String requester, String[] operator, String state, Message[] messages) {
+        this.id = id;
+        this.title = title;
+        this.requester = requester;
+        this.operator = operator;
+        this.state = state;
+        this.messages = messages;
+        this.totalMessages = messages.length;
+    }
 }
