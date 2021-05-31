@@ -1,10 +1,12 @@
 package entites;
 
+import java.util.ArrayList;
+
 public class Ticket {
     private int id;
     private String title;
     private String requester;
-    private String[] operator;
+    private ArrayList<String> operator;
     private String state;
     private Message[] messages;
     private int totalMessages;
@@ -22,7 +24,7 @@ public class Ticket {
     }
 
     // Creating an instance of a class for an existing ticket.
-    public Ticket(int id, String title, String requester, String[] operator, String state, Message[] messages) {
+    public Ticket(int id, String title, String requester, ArrayList<String> operator, String state, Message[] messages) {
         this.id = id;
         this.title = title;
         this.requester = requester;

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCursor;
-import org.bson.BsonDocument;
 import org.junit.*;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
@@ -146,7 +144,7 @@ public class DBConnect {
         int i = 0;
         try (MongoCursor<Document> cursor = ticketsCollection
                 .find(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1))
-                .projection(fields(include("ticketId", "title", "requester", "state", "messages"),
+                .projection(fields(include("ticketId", "title", "requester", "operator", "state", "messages"),
                             slice("messages", -1)))
                 .sort(new BasicDBObject("ticketId", 1))
                 .iterator()) {
@@ -166,7 +164,7 @@ public class DBConnect {
                         document.getInteger("ticketId"),
                         document.getString("title"),
                         document.getString("requester"),
-                        document.get("operator", String[].class),
+                        document.get("operator", ArrayList.class),
                         document.getString("state"),
                         messages
                 );
