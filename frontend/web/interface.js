@@ -124,67 +124,56 @@ async function buildDashboardPage() {
         state: "Состояние",
         time: "Время"
     }
-    ticketsListBlock.append(buildTicketRow(header));
+
+    var table = document.createElement('table');
+    table.id = "tickets-table";
+    
+    table.append(buildTicketBody(header));
     var ticketList = await fetchTicketsList();
     for (ticket in ticketList) {
-        ticketsListBlock.append(buildTicketRow(ticketList[ticket]));
+        table.append(buildTicketBody(ticketList[ticket]));
     }
 
+    ticketsListBlock.append(table);
     dashboardPage.append(ticketsListBlock);
-
     document.body.append(dashboardPage);
 }
 
-function buildTicketRow(ticketInfo) {
-    var ticketDiv = document.createElement('div');
-    ticketDiv.className = "ticket";
+function buildTicketBody(ticketInfo) {
+    var tbody = document.createElement('tbody');
 
-    var numDiv = document.createElement('div');
-    numDiv.className = "ticket-num";
-    numDiv.textContent = ticketInfo.id;
-    ticketDiv.append(numDiv);
+    var tr1 = document.createElement('tr');
+    var tdNum = document.createElement('td');
+    tdNum.className = "ticket-num";
+    tdNum.textContent = ticketInfo.id;
+    tr1.append(tdNum);
 
-    var rowsDiv = document.createElement('div');
-    rowsDiv.className = "rows";
+    var td1 = document.createElement('td');
+    td1.className = "col1";
+    td1.textContent = ticketInfo.title;
+    tr1.append(td1);
 
-    var firstRowDiv = document.createElement('div');
-    firstRowDiv.className = "row";
+    var td2 = document.createElement('td');
+    td2.className = "col2";
+    td2.textContent = ticketInfo.requester;
+    tr1.append(td2);
 
-    var firstColDiv = document.createElement('div');
-    firstColDiv.className = "col1";
-    firstColDiv.textContent = ticketInfo.title;
-    var secondColDiv = document.createElement('div');
-    secondColDiv.className = "col2";
-    secondColDiv.textContent = ticketInfo.requester;
-    var thirdColDiv = document.createElement('div');
-    thirdColDiv.className = "col1";
-    thirdColDiv.textContent = ticketInfo.state;
-    var fourthColDiv = document.createElement('div');
-    fourthColDiv.className = "col1";
-    if (ticketInfo.time == null){
-        fourthColDiv.textContent = ticketInfo.messages[0].time.slice(13, 18);
+    var td3 = document.createElement('td');
+    td3.className = "col3";
+    td3.textContent = ticketInfo.state;
+    tr1.append(td3);
+
+    var td4 = document.createElement('td');
+    td4.className = "col4";
+    if (ticketInfo.time == null) {
+        td4.textContent = ticketInfo.messages[0].time.slice(13, 18);
     } else {
-        fourthColDiv.textContent = ticketInfo.time;
+        td4.textContent = ticketInfo.time;
     }
-    // May 20, 2021 12:05:31 AM
+    tr1.append(td4);
 
-    firstRowDiv.append(firstColDiv);
-    firstRowDiv.append(secondColDiv);
-    firstRowDiv.append(thirdColDiv);
-    firstRowDiv.append(fourthColDiv);
-
-    rowsDiv.append(firstRowDiv);
-
-    if (ticketInfo.operator != null) {
-        var secondRowDiv = document.createElement('div');
-        secondRowDiv.className = "row";
-        secondRowDiv.textContent = ticketInfo.operator;
-        rowsDiv.append(secondRowDiv);
-    }
-
-    ticketDiv.append(rowsDiv);
-
-    return ticketDiv;
+    tbody.append(tr1);
+    return tbody;
 }
 
 async function fetchTicketsList() {
