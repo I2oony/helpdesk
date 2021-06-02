@@ -32,14 +32,13 @@ public class Main {
         } catch (IOException e) {
             logger.warning("An error occurred while opening config file occurred. The default configuration was set." +
                     "\nThe values of default config will be saved to the " + defaultConfigFile);
-        }
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(defaultConfigFile);
-            property.store(fileOutputStream, "Runtime config");
-            fileOutputStream.close();
-        } catch (Exception e) {
-            logger.warning("An error while saving the default configuration to file.");
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(defaultConfigFile);
+                property.store(fileOutputStream, "Runtime config");
+                fileOutputStream.close();
+            } catch (Exception ex) {
+                logger.warning("An error while saving the default configuration to file.");
+            }
         }
 
         String dbHost = property.getProperty("dbHost");
@@ -48,6 +47,8 @@ public class Main {
 
         String host = property.getProperty("httpHost");
         int port = Integer.parseInt(property.getProperty("httpPort"));
+
+        EmailSender.configureSession(property.getProperty("emailAddress"), property.getProperty("emailPassword"));
 
         try {
             InetSocketAddress address = new InetSocketAddress(host, port);

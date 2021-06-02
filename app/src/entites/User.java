@@ -23,6 +23,10 @@ public class User {
         return username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public Role getRole() {
         return role;
     }

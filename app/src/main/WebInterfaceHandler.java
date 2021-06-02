@@ -6,13 +6,13 @@ import com.sun.net.httpserver.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import entites.structures.ChangePassword;
 import services.Authentication;
 import services.CustomLogger;
 import entites.*;
 import services.DBConnect;
+import services.EmailSender;
 
 public class WebInterfaceHandler implements HttpHandler {
     static CustomLogger logger;
@@ -78,7 +78,27 @@ public class WebInterfaceHandler implements HttpHandler {
             case "/api/users/create":
                 User newUser = new Gson().fromJson(requestReader, User.class);
                 if (DBConnect.getUser(newUser.getUsername()) == null) {
+                    try {
+                        String randomPassword = Authentication.generateRandomPass();
+                        newUser.setPassword(Authentication.hashPass(
+                                randomPassword.toCharArray(),
+                                Authentication.createSalt()));
+
+                        StringBuilder emailText = new StringBuilder();
+                        emailText.append("Данные для входа на i2oony.com\n");
+                        emailText.append("Логин: " + newUser.getUsername() + "\n");
+                        emailText.append("Пароль: " + randomPassword);
+
+                        EmailSender.sendEmail(
+                                newUser.getEmail(),
+                                "Данные для входа",
+                                emailText.toString());
+
+                    } catch (Exception e) {
+                        logger.warning("Can't set the random password for " + newUser.getUsername() + ".");
+                    }
                     DBConnect.insertUser(newUser);
+
                     responseCode = 201;
                 } else {
                     responseCode = 403;

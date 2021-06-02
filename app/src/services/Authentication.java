@@ -56,6 +56,14 @@ public class Authentication {
         return base64Encoder.encodeToString(randomBytes);
     }
 
+    public static String generateRandomPass() {
+        byte[] randomBytes = new byte[8];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(randomBytes);
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();;
+        return base64Encoder.encodeToString(randomBytes);
+    }
+
     @Test
     public void setPassTest() {
         DBConnect.setDbProperties("localhost", 27017);
