@@ -21,8 +21,12 @@ function buildPage(user) {
             title = "Настройки системы";
             buildSystemPage();
             break;
+        case "/web/tickets/":
+            var ticketId = document.location.search.split("=")[1];
+            title = "Заявка #" + ticketId;
+            break;
         default:
-            title = "Ошибка!"
+            title = "Ошибка 404 - страница не найдена"
             break;
     }
     buildTopBar(title);
@@ -173,7 +177,18 @@ function buildTicketBody(ticketInfo) {
     tr1.append(td4);
 
     tbody.append(tr1);
+
+    if (Number.isInteger(ticketInfo.id)) {
+        tbody.onclick = openTicket;
+    }
+
     return tbody;
+}
+
+function openTicket(event) {
+    var ticketId = event.target.parentElement.firstElementChild.innerHTML;
+    var url = "https://" + document.location.hostname + "/web/tickets" + "?id=" + ticketId;
+    document.location.assign(url);
 }
 
 async function fetchTicketsList() {

@@ -186,6 +186,11 @@ h3 {
     background-color: var(--color-primary-light);
 }
 
+#tickets-table tbody:nth-child(n+2):hover {
+    background-color: var(--color-primary);
+    cursor: pointer;
+}
+
 .ticket-num {
     width: 5%;
     align-items: center;
