@@ -1,5 +1,7 @@
 package entites;
 
+import org.bson.Document;
+
 import java.util.ArrayList;
 
 public class Ticket {
@@ -32,5 +34,27 @@ public class Ticket {
         this.state = state;
         this.messages = messages;
         this.totalMessages = messages.length;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Document toDocument() {
+        Document document = new Document();
+        document.append("id", id)
+                .append("title", title)
+                .append("requester", requester)
+                .append("operator", operator)
+                .append("state", state)
+                .append("messages", messages);
+        return document;
+    }
+
+    public void addMessage(Message message) {
+        Message[] messages = new Message[totalMessages+1];
+        System.arraycopy(this.messages, 0, messages, 0, totalMessages);
+        messages[totalMessages] = message;
+        this.messages = messages;
     }
 }

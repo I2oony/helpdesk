@@ -113,7 +113,35 @@ public class WebInterfaceHandler implements HttpHandler {
                     logger.warning(e.getMessage());
                 }
                 break;
+            case "/api/ticket":
+                String ticketIdStr = params.split("=")[1];
+                int ticketId = Integer.parseInt(ticketIdStr);
+                if (method.equals("GET")) {
+                    try {
+                        Ticket ticket = DBConnect.getTicket(ticketId);
+                        responseString.append(responseBody.toJson(ticket));
+                    } catch (Exception e) {
+                        logger.warning(e.getMessage());
+                    }
+                } else if (method.equals("POST")) {
+                    try {
+                        Message message = new Gson().fromJson(requestReader, Message.class);
+                        Ticket ticket = DBConnect.getTicket(ticketId);
+                        if (ticket != null) {
+                            ticket.addMessage(message);
+                            DBConnect.updateTicket(ticket);
+                            responseString.append(responseBody.toJson(ticket));
+                        } else {
+                            responseCode = 400;
+                            throw new Exception("An error occurred while adding the new message.");
+                        }
+                    } catch (Exception e) {
+                        logger.warning(e.getMessage());
+                    }
+                }
+                break;
             default:
+                responseCode = 400;
                 break;
         }
 

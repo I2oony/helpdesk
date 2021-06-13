@@ -1,5 +1,7 @@
 package entites;
 
+import org.bson.Document;
+
 import java.util.Date;
 
 public class Message {
@@ -13,5 +15,14 @@ public class Message {
         this.from = from;
         this.text = text;
         this.time = time;
+    }
+
+    public Document toDocument() {
+        Document document = new Document();
+        document.append("id", id)
+                .append("from", from)
+                .append("text", text)
+                .append("time", time);
+        return document;
     }
 }

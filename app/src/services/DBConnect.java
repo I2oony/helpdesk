@@ -6,12 +6,12 @@ import java.util.logging.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCursor;
-import org.junit.*;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.junit.*;
 
 import entites.*;
 
@@ -38,7 +38,7 @@ public class DBConnect {
     public static boolean insertUser(User user) {
         logger.info("Inserting the new user.");
         try {
-            Document document = Document.parse(user.toJson());
+            Document document = user.toDocument();
             usersCollection.insertOne(document);
             logger.info("User successfully inserted.");
             return true;
@@ -96,7 +96,7 @@ public class DBConnect {
         String username = user.getUsername();
         logger.info("Updating the user with username: " + username);
         try {
-            Document document = Document.parse(user.toJson());
+            Document document = user.toDocument();
             usersCollection.replaceOne(eq("username", username), document);
             logger.info("User successfully updated.");
             return true;
@@ -175,6 +175,62 @@ public class DBConnect {
         return tickets;
     }
 
+    public static Ticket getTicket(int ticketId) {
+        try {
+            logger.info("Fetching the ticket with ticketId: " + ticketId);
+            Document document = ticketsCollection.find(eq("ticketId", ticketId)).first();
+            ArrayList messagesArray = document.get("messages", ArrayList.class);
+            int messagesLen = messagesArray.size();
+            Message[] messages = new Message[messagesLen];
+            for (int i=0; i<messagesLen; i++) {
+                Document messageDoc = (Document) messagesArray.get(i);
+                messages[i] = new Message(
+                        messageDoc.getInteger("id"),
+                        messageDoc.getString("from"),
+                        messageDoc.getString("text"),
+                        messageDoc.getDate("date")
+                );
+            }
+            return new Ticket(
+                    document.getInteger("ticketId"),
+                    document.getString("title"),
+                    document.getString("requester"),
+                    document.get("operator", ArrayList.class),
+                    document.getString("state"),
+                    messages
+            );
+        } catch (Exception e) {
+            logger.info("No such ticket exist: " + ticketId);
+            return null;
+        }
+    }
+
+    public static boolean insertTicket(Ticket ticket) {
+        try {
+            Document document = ticket.toDocument();
+            ticketsCollection.insertOne(document);
+            logger.info("Ticket successfully inserted.");
+            return true;
+        } catch (Exception e) {
+            logger.warning("An error occurred while inserting a ticket - " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateTicket(Ticket ticket) {
+        int ticketId = ticket.getId();
+        logger.info("Updating the ticket with ticketId: " + ticketId);
+        try {
+            Document document = ticket.toDocument();
+            ticketsCollection.replaceOne(eq("ticketId", ticketId), document);
+            logger.info("Ticket successfully updated.");
+            return true;
+        } catch (Exception e) {
+            logger.warning("An error occurred while updating a ticket - " + e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean addSession(Session session) {
         try {
             Document document = new Document();
@@ -241,7 +297,7 @@ public class DBConnect {
                         "\n- isPasswordSet: " + isPasswordSet +
                         "\n- isUpdated: " + isUpdated +
                         "\n- isDeleted: " + isDeleted +
-                        "\nRetrieved user:\n" + retrievedUser.toJson()
+                        "\nRetrieved user:\n" + retrievedUser.toDocument().toJson()
                 );
     }
 

@@ -1,7 +1,6 @@
 package entites;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.bson.Document;
 
 public class User {
     private final String username;
@@ -36,9 +35,15 @@ public class User {
         return true;
     }
 
-    public String toJson() {
-        Gson json = new GsonBuilder().setPrettyPrinting().create();
-        return json.toJson(this);
+    public Document toDocument() {
+        Document document = new Document();
+        document.append("username", username)
+                .append("firstName", firstName)
+                .append("lastName", lastName)
+                .append("email", email)
+                .append("role", role.toString())
+                .append("password", password);
+        return document;
     }
 
     public enum Role {
