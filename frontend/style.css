@@ -11,6 +11,20 @@ body {
     background-color: var(--color-background);
 }
 
+*::-webkit-scrollbar {
+    width: 0.5rem;
+}
+  
+*::-webkit-scrollbar-track {
+    background: var(--color-primary);
+}
+  
+*::-webkit-scrollbar-thumb {
+    background-color: var(--color-on-primary);
+    border-radius: 0.5rem;
+    border: 0.125rem solid var(--color-primary);
+}
+
 header {
     display: flex;
     flex-grow: 0.75;
@@ -210,4 +224,69 @@ h3 {
 
 #tickets-list .col4 {
     width: 10%;
+}
+
+#ticket-page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#input-block {
+    margin-bottom: 0;
+}
+
+#message-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.message-field {
+    color: var(--color-on-primary);
+    background: none;
+    width: 80%;
+    padding: 0.5rem;
+    border: 2px solid var(--color-on-primary);
+    border-radius: 0.5rem;
+}
+
+.message-field:focus {
+    background: none;
+    color: var(--color-on-primary);
+    outline: none;
+    border: 2px solid var(--color-secondary);
+}
+
+.message-field::placeholder {
+    color: var(--color-on-primary);
+}
+
+.message-block {
+    padding: 0.5rem;
+    width: 75%;
+    margin-bottom: 0.5rem;
+}
+
+.message-block-info {
+    margin-bottom: 0.25rem;
+}
+
+#messages-block {
+    overflow: auto;
+    height: 72vh;
+}
+
+.left {
+    color: var(--color-on-secondary);
+    background-color: var(--color-secondary);
+    border-radius: 0.5rem 0.5rem 0.5rem 0;
+}
+
+.right {
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border-radius: 0.5rem 0.5rem 0 0.5rem;
+    margin: 0 0 0.5rem auto;
 }

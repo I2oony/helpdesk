@@ -24,6 +24,7 @@ function buildPage(user) {
         case "/web/tickets/":
             var ticketId = document.location.search.split("=")[1];
             title = "Заявка #" + ticketId;
+            buildTicketPage(ticketId, user);
             break;
         default:
             title = "Ошибка 404 - страница не найдена"
@@ -126,7 +127,7 @@ async function buildDashboardPage() {
         title: "Тема",
         requester: "Отправитель",
         state: "Состояние",
-        time: "Время"
+        date: "Время"
     }
 
     var table = document.createElement('table');
@@ -169,10 +170,11 @@ function buildTicketBody(ticketInfo) {
 
     var td4 = document.createElement('td');
     td4.className = "col4";
-    if (ticketInfo.time == null) {
-        td4.textContent = ticketInfo.messages[0].time.slice(13, 18);
+    if (ticketInfo.date == null) {
+        var date = new Date(ticketInfo.messages[0].date);
+        td4.textContent = date.toLocaleString();
     } else {
-        td4.textContent = ticketInfo.time;
+        td4.textContent = ticketInfo.date;
     }
     tr1.append(td4);
 
@@ -445,6 +447,140 @@ async function createUser() {
     usersListBlock.remove();
     usersListBlock = await buildUserListBlock();
     systemPage.append(usersListBlock);
+}
+
+async function buildTicketPage(ticketId, user) {
+    var body = await fetchTicketData(ticketId);
+
+    var ticketPage = document.createElement('div');
+    ticketPage.id = "ticket-page";
+    ticketPage.className = "main-content";
+
+    var pageTitle = document.getElementById("page-title");
+    pageTitle.textContent = pageTitle.textContent + ": \"" + body["title"] + "\"";
+
+    var messagesContent = document.createElement('div');
+    messagesContent.id = "messages-block";
+    messagesContent.className = "surface";
+    messagesContent.append(buildMessagesList(body["messages"], user["username"]));
+
+    var inputSurface = document.createElement('div');
+    inputSurface.id = "input-block";
+    inputSurface.className = "surface";
+    inputSurface.append(buildMessageForm())
+
+    ticketPage.append(messagesContent);
+    ticketPage.append(inputSurface);
+    document.body.append(ticketPage);
+}
+
+function buildMessagesList(messages, username) {
+    var messagesList = document.getElementById("messages-list");
+
+    if (messagesList!=null) {
+        messagesList.innerHTML = '';
+    } else {
+        messagesList = document.createElement('div');
+        messagesList.id = "messages-list";
+    }
+
+    for (message in messages) {
+        messagesList.append(buildMessageBlock(messages[message], username));
+    }
+    return messagesList;
+}
+
+function buildMessageBlock(message, username) {
+    var div = document.createElement('div');
+    div.classList.add("message-block");
+
+    var date = new Date(message['date']);
+
+    var from = document.createElement('div');
+    from.textContent = message['from'] + " - " + date.toLocaleString();
+    from.classList.add("font-subtitle-2");
+    from.classList.add("message-block-info");
+
+    var text = document.createElement('div');
+    text.textContent = message['text'];
+    text.classList.add("font-header-6");
+
+    div.append(from);
+    div.append(text);
+    if (username == message['from']){
+        div.classList.add("right");
+    } else {
+        div.classList.add("left");
+    }
+    return div;
+}
+
+function buildMessageForm() {
+    var form = document.createElement('form');
+    form.method = "dialog";
+    form.onsubmit = sendMessage;
+    form.id = "message-form"
+
+    var input = document.createElement('input');
+    input.id = "message-text-field";
+    input.className = "message-field font-header-6";
+    form.append(input);
+
+    var button = document.createElement('button');
+    button.className = "button-text z-axis-1 font-button";
+    button.textContent = "Отправить";
+
+    form.append(button);
+
+    return form;
+}
+
+async function sendMessage() {
+    config.method = "post";
+    config.url = "/api/ticket?ticketId=" + document.location.search.split("=")[1];;
+    
+    var date = new Date().toJSON();
+    var text = document.getElementById("message-text-field").value;
+
+    var body = {
+        id: 0,
+        from: user['username'],
+        text: text,
+        date: date
+    };
+
+    config.data = JSON.stringify(body);
+
+    var respBody = null;
+    await axios(config)
+        .then(function (response) {
+            respBody = response.data;
+            buildMessagesList(body["messages"], user["username"]);
+        })
+        .catch(function (response) {
+            respBody = null;
+            console.log("Something went wrong while sending the message!")
+        });
+    
+    document.getElementById("message-text-field").value = "";
+}
+
+async function fetchTicketData(ticketId) {
+    config.method = "get";
+    config.url = "/api/ticket?ticketId=" + ticketId;
+
+    var body = null;
+
+    await axios(config)
+        .then(function (response) {
+            body = response.data;
+        })
+        .catch(function (response) {
+            body = null;
+            console.log("Error while fetching the ticket data.");
+        });
+    
+    return body;
 }
 
 function buildMainContent(id) {
