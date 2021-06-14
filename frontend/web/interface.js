@@ -472,7 +472,14 @@ async function buildTicketPage(ticketId, user) {
     ticketPage.append(messagesContent);
     ticketPage.append(inputSurface);
     document.body.append(ticketPage);
-    
+
+    var topBarHeight = document.getElementsByClassName('top-bar')[0].scrollHeight;
+    var inputSurfaceHeight = inputSurface.scrollHeight;
+
+    var messagesContetnHeight = (window.innerHeight - topBarHeight - inputSurfaceHeight) - 100;
+    console.log(messagesContetnHeight);
+    messagesContent.style.height = messagesContetnHeight + "px";
+
     messagesContent.scrollTo(0, 5000);
 }
 
@@ -557,7 +564,7 @@ async function sendMessage() {
     await axios(config)
         .then(function (response) {
             respBody = response.data;
-            buildMessagesList(body["messages"], user["username"]);
+            buildMessagesList(respBody["messages"], user["username"]);
         })
         .catch(function (response) {
             respBody = null;
