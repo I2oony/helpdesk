@@ -146,9 +146,10 @@ public class WebInterfaceHandler implements HttpHandler {
                 break;
         }
 
-        responseHeaders.add("Content-Type", "application/json");
-        httpExchange.sendResponseHeaders(responseCode, responseString.length());
-        responseStream.write(responseString.toString().getBytes(StandardCharsets.UTF_8));
+        responseHeaders.add("Content-Type", "application/json; charset=utf-8");
+        byte[] responseBytes = responseString.toString().getBytes(StandardCharsets.UTF_8);
+        httpExchange.sendResponseHeaders(responseCode, responseBytes.length);
+        responseStream.write(responseBytes);
         responseStream.flush();
         httpExchange.close();
     }

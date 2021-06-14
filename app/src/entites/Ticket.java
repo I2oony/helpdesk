@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public class Ticket {
     private int id;
-    private String title;
-    private String requester;
+    private final String title;
+    private final String requester;
     private ArrayList<String> operator;
-    private String state;
+    private final String state;
     private Message[] messages;
     private int totalMessages;
 
