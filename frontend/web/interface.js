@@ -472,6 +472,8 @@ async function buildTicketPage(ticketId, user) {
     ticketPage.append(messagesContent);
     ticketPage.append(inputSurface);
     document.body.append(ticketPage);
+    
+    messagesContent.scrollTo(0, 5000);
 }
 
 function buildMessagesList(messages, username) {
