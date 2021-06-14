@@ -8,13 +8,17 @@ public class Message {
     private int id;
     private String from;
     private String text;
-    private Date time;
+    private Date date;
 
-    public Message(int id, String from, String text, Date time) {
+    public Message(int id, String from, String text, Date date) {
         this.id = id;
         this.from = from;
         this.text = text;
-        this.time = time;
+        this.date = date;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Document toDocument() {
@@ -22,7 +26,7 @@ public class Message {
         document.append("id", id)
                 .append("from", from)
                 .append("text", text)
-                .append("time", time);
+                .append("date", date);
         return document;
     }
 }

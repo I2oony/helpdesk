@@ -41,20 +41,27 @@ public class Ticket {
     }
 
     public Document toDocument() {
+        ArrayList documentMessages = new ArrayList();
+        for (int i=0; i<totalMessages; i++) {
+            documentMessages.add(messages[i].toDocument());
+        }
+
         Document document = new Document();
-        document.append("id", id)
+        document.append("ticketId", id)
                 .append("title", title)
                 .append("requester", requester)
                 .append("operator", operator)
                 .append("state", state)
-                .append("messages", messages);
+                .append("messages", documentMessages);
         return document;
     }
 
     public void addMessage(Message message) {
         Message[] messages = new Message[totalMessages+1];
         System.arraycopy(this.messages, 0, messages, 0, totalMessages);
+        message.setId(totalMessages);
         messages[totalMessages] = message;
         this.messages = messages;
+        this.totalMessages++;
     }
 }

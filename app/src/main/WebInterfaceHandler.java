@@ -33,7 +33,10 @@ public class WebInterfaceHandler implements HttpHandler {
 
         OutputStream responseStream = httpExchange.getResponseBody();
         Headers responseHeaders = httpExchange.getResponseHeaders();
-        Gson responseBody = new GsonBuilder().setPrettyPrinting().create();
+        Gson responseBody = new GsonBuilder()
+                .setPrettyPrinting()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss Z")
+                .create();
         int responseCode = 200;
         StringBuilder responseString = new StringBuilder();
 
