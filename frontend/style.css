@@ -13,6 +13,7 @@ body {
 
 *::-webkit-scrollbar {
     width: 0.5rem;
+    height: 0.5rem;
 }
   
 *::-webkit-scrollbar-track {
@@ -246,10 +247,11 @@ h3 {
 .message-field {
     color: var(--color-on-primary);
     background: none;
-    width: 80%;
+    width: 100%;
     padding: 0.5rem;
     border: 2px solid var(--color-on-primary);
     border-radius: 0.5rem;
+    margin-right: 1rem;
 }
 
 .message-field:focus {
