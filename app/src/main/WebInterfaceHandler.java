@@ -87,15 +87,13 @@ public class WebInterfaceHandler implements HttpHandler {
                                 randomPassword.toCharArray(),
                                 Authentication.createSalt()));
 
-                        StringBuilder emailText = new StringBuilder();
-                        emailText.append("Данные для входа на i2oony.com\n");
-                        emailText.append("Логин: " + newUser.getUsername() + "\n");
-                        emailText.append("Пароль: " + randomPassword);
-
+                        String emailText = "Данные для входа на i2oony.com\n" +
+                                "Логин: " + newUser.getUsername() + "\n" +
+                                "Пароль: " + randomPassword;
                         EmailSender.sendEmail(
                                 newUser.getEmail(),
                                 "Данные для входа",
-                                emailText.toString());
+                                emailText);
 
                     } catch (Exception e) {
                         logger.warning("Can't set the random password for " + newUser.getUsername() + ".");

@@ -10,7 +10,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.junit.*;
 
@@ -66,7 +65,7 @@ public class DBConnect {
         }
     }
 
-    public static User[] getUsersList() throws Exception {
+    public static User[] getUsersList() {
         int length = (int) usersCollection.count();
         logger.info("Fetching the users list. Total users: " + length);
         User[] users = new User[length];

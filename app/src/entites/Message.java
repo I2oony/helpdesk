@@ -6,9 +6,9 @@ import java.util.Date;
 
 public class Message {
     private int id;
-    private String from;
-    private String text;
-    private Date date;
+    private final String from;
+    private final String text;
+    private final Date date;
 
     public Message(int id, String from, String text, Date date) {
         this.id = id;

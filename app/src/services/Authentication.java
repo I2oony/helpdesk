@@ -52,7 +52,7 @@ public class Authentication {
         byte[] randomBytes = new byte[24];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomBytes);
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder();;
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
         return base64Encoder.encodeToString(randomBytes);
     }
 
@@ -60,7 +60,7 @@ public class Authentication {
         byte[] randomBytes = new byte[8];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomBytes);
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder();;
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
         return base64Encoder.encodeToString(randomBytes);
     }
 

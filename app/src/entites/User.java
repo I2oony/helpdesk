@@ -4,10 +4,10 @@ import org.bson.Document;
 
 public class User {
     private final String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Role role;
+    private final String firstName;
+    private final String lastName;
+    private final String email;
+    private final Role role;
     private String password;
 
     public User(String username, String email, Role role, String firstName, String lastName) {
