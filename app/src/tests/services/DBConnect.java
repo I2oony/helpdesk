@@ -3,8 +3,6 @@ package tests.services;
 import entites.User;
 import org.junit.*;
 
-import java.security.GeneralSecurityException;
-
 import static org.junit.Assert.*;
 import static services.DBConnect.*;
 
@@ -30,7 +28,7 @@ public class DBConnect {
     }
 
     @Test
-    public void userTest() throws GeneralSecurityException {
+    public void userTest() {
         assertTrue(insertUser(testUser));
         assertTrue(testUser.setPassword("SomeTestPassword"));
         assertTrue(updateUser(testUser));
