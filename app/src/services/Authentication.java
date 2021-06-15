@@ -64,32 +64,4 @@ public class Authentication {
         return base64Encoder.encodeToString(randomBytes);
     }
 
-    @Test
-    public void setPassTest() {
-        DBConnect.setDbProperties("localhost", 27017);
-        User adminUser = DBConnect.getUser("admin");
-        String pass = "adminPass";
-        char[] passChars = pass.toCharArray();
-        try {
-            adminUser.setPassword(hashPass(passChars, createSalt()));
-            DBConnect.updateUser(adminUser);
-        } catch (GeneralSecurityException e) {
-            logger.warning("An error occurred while setting the password");
-        }
-    }
-
-    @Test
-    public void checkPassTest() {
-        DBConnect.setDbProperties("localhost", 27017);
-        String pass = "adminPass";
-        String hash = DBConnect.getUsersPassword("admin");
-        char[] passChars = pass.toCharArray();
-        try {
-            boolean isCorrect = checkPass(passChars, hash);
-            logger.info("Is password correct: " + isCorrect);
-        } catch (Exception e) {
-            logger.warning("An error occurred while checking the password");
-        }
-    }
-
 }
