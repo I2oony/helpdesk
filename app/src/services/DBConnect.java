@@ -273,42 +273,4 @@ public class DBConnect {
         }
     }
 
-    @Test
-    public void userTest() {
-        setDbProperties("localhost", 27017);
-
-        User testUser = new User(
-                "testUser",
-                "test@user.com",
-                User.Role.valueOf("client"),
-                "Test",
-                "User"
-        );
-
-        boolean isInserted = insertUser(testUser);
-        boolean isPasswordSet = testUser.setPassword("SomeTestPassword2");
-        boolean isUpdated = updateUser(testUser);
-        User retrievedUser = getUser(testUser.getUsername());
-        boolean isDeleted = deleteUser(testUser);
-
-        logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'user' part completed." +
-                "\nResults:" +
-                        "\n- isInserted: " + isInserted +
-                        "\n- isPasswordSet: " + isPasswordSet +
-                        "\n- isUpdated: " + isUpdated +
-                        "\n- isDeleted: " + isDeleted +
-                        "\nRetrieved user:\n" + retrievedUser.toDocument().toJson()
-                );
-    }
-
-    @Test
-    public void ticketTest() {
-        logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'ticket' part completed.");
-    }
-
-    @Test
-    public void sessionTest() {
-        logger.info("UnitTest for " + DBConnect.class.getName() + " module, 'session' part completed.");
-    }
-
 }

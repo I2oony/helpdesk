@@ -67,7 +67,7 @@ public class WebInterfaceHandler implements HttpHandler {
                     try {
                         ChangePassword passwordData = new Gson().fromJson(requestReader, ChangePassword.class);
                         if (Authentication.checkPass(passwordData.oldPassword.toCharArray(), DBConnect.getUsersPassword(user.getUsername()))) {
-                            user.setPassword(Authentication.hashPass(passwordData.newPassword.toCharArray(), Authentication.createSalt()));
+                            user.setPassword(passwordData.newPassword);
                             DBConnect.updateUser(user);
                             logger.info("Password for the user " + user.getUsername() + " was changed.");
                         } else {
@@ -83,9 +83,7 @@ public class WebInterfaceHandler implements HttpHandler {
                 if (DBConnect.getUser(newUser.getUsername()) == null) {
                     try {
                         String randomPassword = Authentication.generateRandomPass();
-                        newUser.setPassword(Authentication.hashPass(
-                                randomPassword.toCharArray(),
-                                Authentication.createSalt()));
+                        newUser.setPassword(randomPassword);
 
                         String emailText = "Данные для входа на i2oony.com\n" +
                                 "Логин: " + newUser.getUsername() + "\n" +
@@ -99,7 +97,7 @@ public class WebInterfaceHandler implements HttpHandler {
                         logger.warning("Can't set the random password for " + newUser.getUsername() + ".");
                     }
                     DBConnect.insertUser(newUser);
-
+                    newUser.deletePassword();
                     responseCode = 201;
                 } else {
                     responseCode = 403;

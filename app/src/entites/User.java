@@ -1,6 +1,9 @@
 package entites;
 
 import org.bson.Document;
+import services.Authentication;
+
+import java.security.GeneralSecurityException;
 
 public class User {
     private final String username;
@@ -31,7 +34,16 @@ public class User {
     }
 
     public boolean setPassword(String newPassword) {
-        password = newPassword;
+        try {
+            password = Authentication.hashPass(newPassword.toCharArray(), Authentication.createSalt());
+            return true;
+        } catch (GeneralSecurityException e) {
+            return false;
+        }
+    }
+
+    public boolean deletePassword() {
+        password = null;
         return true;
     }
 
