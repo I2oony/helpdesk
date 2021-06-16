@@ -477,10 +477,11 @@ async function buildTicketPage(ticketId, user) {
     var inputSurfaceHeight = inputSurface.scrollHeight;
 
     var messagesContetnHeight = (window.innerHeight - topBarHeight - inputSurfaceHeight) - 100;
-    console.log(messagesContetnHeight);
     messagesContent.style.height = messagesContetnHeight + "px";
 
-    messagesContent.scrollTo(0, 5000);
+    messagesContent.scrollTo(0, 99999);
+
+    setInterval(checkForNewMessages, 10000, ticketId);
 }
 
 function buildMessagesList(messages, username) {
@@ -535,6 +536,15 @@ function buildMessageForm() {
     input.className = "message-field font-header-6";
     form.append(input);
 
+    var stateList = [
+        {value: "waiting", text: "Ожидает ответ оператора"},
+        {value: "freeze", text: "Ожидает ответ клиента"},
+        {value: "closed", text: "Закрыта"}
+    ]
+
+    var stateDropdown = buildDropdown('ticket-state-dropdown', stateList);
+    form.append(stateDropdown);
+
     var button = document.createElement('button');
     button.className = "button-text z-axis-1 font-button";
     button.textContent = "Отправить";
@@ -564,7 +574,7 @@ async function sendMessage() {
     await axios(config)
         .then(function (response) {
             respBody = response.data;
-            buildMessagesList(respBody["messages"], user["username"]);
+            buildMessagesList(respBody["messages"], user["username"]).parentElement.scrollTo(0, 99999);
         })
         .catch(function (response) {
             respBody = null;
@@ -590,6 +600,11 @@ async function fetchTicketData(ticketId) {
         });
     
     return body;
+}
+
+async function checkForNewMessages(ticketId) {
+    var body = await fetchTicketData(ticketId);
+    buildMessagesList(body["messages"], user["username"]).parentElement.scrollTo(0, 99999);
 }
 
 function buildMainContent(id) {
