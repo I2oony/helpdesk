@@ -118,7 +118,13 @@ function logout() {
 
 async function buildDashboardPage() {
     var dashboardPage = buildMainContent("dashboard-page");
+
+    var newTicketBlock = buildBlock("new-ticket-block");
+    newTicketBlock.append(buildBlockHeader("Создать новую заявку"));
+    dashboardPage.append(newTicketBlock);
+
     var ticketsListBlock = buildBlock("tickets-list");
+    ticketsListBlock.append(buildBlockHeader("Список существующих заявок"));
 
     ticketsListBlock.classList.add("font-header-6");
 
@@ -158,15 +164,35 @@ function buildTicketBody(ticketInfo) {
     td1.textContent = ticketInfo.title;
     tr1.append(td1);
 
-    var td2 = document.createElement('td');
-    td2.className = "col2";
-    td2.textContent = ticketInfo.requester;
-    tr1.append(td2);
+    if (user['role']!="client"){
+        var td2 = document.createElement('td');
+        td2.className = "col2";
+        td2.textContent = ticketInfo.requester;
+        tr1.append(td2);
 
-    var td3 = document.createElement('td');
-    td3.className = "col3";
-    td3.textContent = ticketInfo.state;
-    tr1.append(td3);
+        var td3 = document.createElement('td');
+        td3.className = "col3";
+        var ticketStateString;
+        switch (ticketInfo.state) {
+            case "created":
+                ticketStateString = "Создан";
+                break;
+            case "waiting":
+                ticketStateString = "Ожидает ответ";
+                break;
+            case "freeze":
+                ticketStateString = "Ожидает клиента";
+                break;
+            case "closed":
+                ticketStateString = "Закрыт";
+                break;
+            default:
+                ticketStateString = "Состояние";
+                break;
+        }
+        td3.textContent = ticketStateString;
+        tr1.append(td3);
+    }
 
     var td4 = document.createElement('td');
     td4.className = "col4";
@@ -353,7 +379,7 @@ async function buildUserListBlock() {
         lastName: "Фамилия",
         email: "Электронная почта",
         role: "Роль"}
-    usersTable.append(buildUserRow(header, "font-header-4"));
+    usersTable.append(buildUserRow(header, "font-header-5"));
     for (user in usersList) {
         usersTable.append(buildUserRow(usersList[user], "font-header-6"));
     }
@@ -456,6 +482,10 @@ async function buildTicketPage(ticketId, user) {
     ticketPage.id = "ticket-page";
     ticketPage.className = "main-content";
 
+    var ticketInfoBlock = buildBlock("ticket-info-block");
+    ticketInfoBlock.append(buildBlockHeader("Информация о заявке"));
+    ticketPage.append(ticketInfoBlock);
+
     var pageTitle = document.getElementById("page-title");
     pageTitle.textContent = pageTitle.textContent + ": \"" + body["title"] + "\"";
 
@@ -474,9 +504,10 @@ async function buildTicketPage(ticketId, user) {
     document.body.append(ticketPage);
 
     var topBarHeight = document.getElementsByClassName('top-bar')[0].scrollHeight;
+    var ticketInfoBlockHeight = document.getElementById("ticket-info-block").scrollHeight;
     var inputSurfaceHeight = inputSurface.scrollHeight;
 
-    var messagesContetnHeight = (window.innerHeight - topBarHeight - inputSurfaceHeight) - 100;
+    var messagesContetnHeight = (window.innerHeight - topBarHeight - inputSurfaceHeight - ticketInfoBlockHeight) - 120;
     messagesContent.style.height = messagesContetnHeight + "px";
 
     messagesContent.scrollTo(0, 99999);
@@ -512,7 +543,11 @@ function buildMessageBlock(message, username) {
     from.classList.add("message-block-info");
 
     var text = document.createElement('div');
-    text.textContent = message['text'];
+    if (message['text']!= ""){
+        text.textContent = message['text'];
+    } else {
+        text.innerHTML = "<i>Состояние заявки изменено.</i>";
+    }
     text.classList.add("font-header-6");
 
     div.append(from);
@@ -636,7 +671,7 @@ function buildBlock(id) {
 
 function buildBlockHeader(title) {
     var header = document.createElement('h3');
-    header.className = "font-header-3";
+    header.className = "font-header-4";
     header.textContent = title;
     return header;
 }

@@ -53,6 +53,12 @@
     font-size: 2rem;
 }
 
+.font-header-5 {
+    font-family: Montserrat, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
 .font-header-6 {
     font-family: Montserrat, 'Segoe UI', sans-serif;
     font-weight: 500;
