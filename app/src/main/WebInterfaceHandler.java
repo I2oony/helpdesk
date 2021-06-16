@@ -110,7 +110,7 @@ public class WebInterfaceHandler implements HttpHandler {
                     responseCode = 403;
                 }
                 break;
-            case "/api/users/status":
+            case "/api/users/state":
                 if (method.equals("GET")) {
                     Operator operator = DBConnect.getOperatorStatus(username);
                     responseString.append(responseBody.toJson(operator, Operator.class));

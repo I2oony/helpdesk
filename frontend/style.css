@@ -321,8 +321,8 @@ h3 {
     margin-left: 1rem;
     width: 3rem;
     height: 1rem;
-
     border-radius: 0.5rem;
+    cursor: pointer;
 }
 
 #switcher {

@@ -139,7 +139,7 @@ async function buildDashboardPage() {
     titleField.id = "ticket-title-field";
     titleField.className = "field font-header-6";
     newTicketForm.append(titleField);
-    var createButton = buildButton("Создать", createNewTicket);
+    var createButton = buildButton("Создать", null);
     newTicketForm.append(createButton);
 
     newTicketBlock.append(newTicketForm);
@@ -174,6 +174,7 @@ async function buildDashboardPage() {
 }
 
 async function createNewTicket() {
+    console.log("help");
     var title = document.getElementById("ticket-title-field").value;
     config.method = "post";
     config.url = "/api/tickets/create";
@@ -181,9 +182,14 @@ async function createNewTicket() {
     var body = {
         title: title,
         requester: user['username'],
-        messages: [],
-        operator: []
+        messages: []
     };
+
+    if(user['role'] == "operator") {
+        body.operator = [user.username]
+    } else {
+        body.operator = [];
+    }
 
     config.data = JSON.stringify(body);
 
@@ -740,7 +746,9 @@ function buildButton(title, action) {
     var button = document.createElement('button');
     button.className = "button-text z-axis-1 font-button";
     button.textContent = title;
-    button.onclick = action;
+    if (action!=null) {
+        button.onclick = action;
+    }
     return button;
 }
 
@@ -827,7 +835,7 @@ function createStatusSwitcher() {
 }
 
 function operatorStatus(method) {
-    config.url = "/api/users/status";
+    config.url = "/api/users/state";
     config.method = method;
 
     axios(config)
@@ -835,7 +843,7 @@ function operatorStatus(method) {
             body = response.data;
             var divSwitcher = document.getElementById("status-switcher");
             var divOnline = document.getElementById("switcher");
-            if (body['status'] == "offline") {
+            if (body['state'] == "offline") {
                 divSwitcher.classList.add("status-switcher-off");
                 divSwitcher.classList.remove("status-switcher-on");
                 divOnline.classList.add("switcher-off");

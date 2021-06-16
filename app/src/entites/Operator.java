@@ -4,25 +4,25 @@ import org.bson.Document;
 
 public class Operator {
     private final String username;
-    private String status;
+    private String state;
 
     public Operator(String username, String status) {
         this.username = username;
-        this.status = status;
+        this.state = status;
     }
 
     public void changeStatus() {
-        if (status.equals("offline")) {
-            status = "online";
+        if (state.equals("offline")) {
+            state = "online";
         } else {
-            status = "offline";
+            state = "offline";
         }
     }
 
     public Document toDocument() {
         Document document = new Document();
         document.append("username", username)
-                .append("status", status);
+                .append("state", state);
         return document;
     }
 }

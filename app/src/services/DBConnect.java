@@ -290,10 +290,12 @@ public class DBConnect {
     }
 
     public static Operator getOperatorStatus(String username) {
+        logger.info("Getting current status for the operator with username: " + username);
         Document document = operatorsCollection.find(eq("username", username)).first();
+        System.out.println(document);
         Operator operator;
         if (document != null) {
-            operator = new Operator(document.getString("username"), document.getString("status"));
+            operator = new Operator(document.getString("username"), document.getString("state"));
         } else {
             operator = new Operator(username, "offline");
             operatorsCollection.insertOne(operator.toDocument());
@@ -302,6 +304,7 @@ public class DBConnect {
     }
 
     public static Operator changeOperatorStatus(String username) {
+        logger.info("Changing status for the operator with username: " + username);
         Operator operator = getOperatorStatus(username);
         operator.changeStatus();
         Document document = operator.toDocument();
