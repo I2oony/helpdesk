@@ -172,25 +172,7 @@ function buildTicketBody(ticketInfo) {
 
         var td3 = document.createElement('td');
         td3.className = "col3";
-        var ticketStateString;
-        switch (ticketInfo.state) {
-            case "created":
-                ticketStateString = "Создан";
-                break;
-            case "waiting":
-                ticketStateString = "Ожидает ответ";
-                break;
-            case "freeze":
-                ticketStateString = "Ожидает клиента";
-                break;
-            case "closed":
-                ticketStateString = "Закрыт";
-                break;
-            default:
-                ticketStateString = "Состояние";
-                break;
-        }
-        td3.textContent = ticketStateString;
+        td3.textContent = stateLocalization(ticketInfo.state);
         tr1.append(td3);
     }
 
@@ -484,6 +466,7 @@ async function buildTicketPage(ticketId, user) {
 
     var ticketInfoBlock = buildBlock("ticket-info-block");
     ticketInfoBlock.append(buildBlockHeader("Информация о заявке"));
+    ticketInfoBlock.append(buildTicketInfoDiv(body['requester'], body['state']));
     ticketPage.append(ticketInfoBlock);
 
     var pageTitle = document.getElementById("page-title");
@@ -623,6 +606,7 @@ async function sendMessage() {
         .then(function (response) {
             respBody = response.data;
             buildMessagesList(respBody["messages"], user["username"]).parentElement.scrollTo(0, 99999);
+            buildTicketInfoDiv(respBody['requester'], respBody['state']);
         })
         .catch(function (response) {
             respBody = null;
@@ -634,7 +618,10 @@ async function sendMessage() {
 
 async function fetchTicketData(ticketId) {
     config.method = "get";
-    config.url = "/api/ticket?ticketId=" + ticketId;
+    config.url = "/api/ticket";
+    config.params = {
+        ticketId: ticketId
+    }
 
     var body = null;
 
@@ -653,6 +640,7 @@ async function fetchTicketData(ticketId) {
 async function checkForNewMessages(ticketId) {
     var body = await fetchTicketData(ticketId);
     buildMessagesList(body["messages"], user["username"]).parentElement.scrollTo(0, 99999);
+    buildTicketInfoDiv(body['requester'], body['state']);
 }
 
 function buildMainContent(id) {
@@ -705,4 +693,39 @@ function buildDropdown(id, options) {
         select.append(opt);
     }
     return select;
+}
+
+function buildTicketInfoDiv(requester, state) {
+    var ticketInfoDiv = document.getElementById("ticket-info-div");
+    if (ticketInfoDiv!=null) {
+        ticketInfoDiv.innerHTML = "";
+    } else {
+        ticketInfoDiv = document.createElement('div');
+        ticketInfoDiv.id = "ticket-info-div";
+        ticketInfoDiv.className = "font-header-6";
+    }
+    ticketInfoDiv.textContent = "От: " + requester + ", cостояние: " + stateLocalization(state);
+    return ticketInfoDiv;
+}
+
+function stateLocalization(state) {
+    var ticketStateString;
+    switch (state) {
+        case "created":
+            ticketStateString = "Создан";
+            break;
+        case "waiting":
+            ticketStateString = "Ожидает ответ оператора";
+            break;
+        case "freeze":
+            ticketStateString = "Ожидает ответ клиента";
+            break;
+        case "closed":
+            ticketStateString = "Закрыта";
+            break;
+        default:
+            ticketStateString = "Состояние";
+            break;
+    }
+    return ticketStateString;
 }
