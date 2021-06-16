@@ -118,6 +118,20 @@ public class WebInterfaceHandler implements HttpHandler {
                     logger.warning(e.getMessage());
                 }
                 break;
+            case "/api/tickets/create":
+                if (method.equals("POST")) {
+                    try {
+                        Ticket newTicket = new Gson().fromJson(requestReader, Ticket.class);
+                        DBConnect.insertTicket(newTicket);
+                        responseString.append(responseBody.toJson(newTicket));
+                    } catch (Exception e) {
+                        logger.warning(e.getMessage());
+                    }
+                } else {
+                    responseHeaders.add("Allow", "POST");
+                    responseCode = 405;
+                }
+                break;
             case "/api/ticket":
                 String ticketIdStr = paramsMap.get("ticketId");
                 int ticketId = Integer.parseInt(ticketIdStr);

@@ -13,18 +13,6 @@ public class Ticket {
     private Message[] messages;
     private int totalMessages;
 
-    // Creating an instance of the class for a new ticket.
-    public Ticket(String title, String requester, Message message) {
-        this.title = title;
-        this.requester = requester;
-
-        totalMessages = 1;
-        messages = new Message[totalMessages];
-        messages[0] = message;
-
-        state = "created";
-    }
-
     // Creating an instance of a class for an existing ticket.
     public Ticket(int id, String title, String requester, ArrayList<String> operator, String state, Message[] messages) {
         this.id = id;
@@ -38,6 +26,14 @@ public class Ticket {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public Document toDocument() {

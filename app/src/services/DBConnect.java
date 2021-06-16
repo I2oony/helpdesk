@@ -11,7 +11,6 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.junit.*;
 
 import entites.*;
 
@@ -118,6 +117,10 @@ public class DBConnect {
         }
     }
 
+    public static int getTicketsCount() {
+        return (int) ticketsCollection.count();
+    }
+
     public static Ticket[] getTicketsList(String username) {
         logger.info("Fetching the tickets list.");
         User requester = getUser(username);
@@ -207,6 +210,8 @@ public class DBConnect {
 
     public static boolean insertTicket(Ticket ticket) {
         try {
+            ticket.setId(getTicketsCount());
+            ticket.setState("created");
             Document document = ticket.toDocument();
             ticketsCollection.insertOne(document);
             logger.info("Ticket successfully inserted.");
