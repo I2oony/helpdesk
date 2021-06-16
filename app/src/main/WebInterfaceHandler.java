@@ -6,6 +6,7 @@ import com.sun.net.httpserver.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import entites.structures.ChangePassword;
 import services.Authentication;
@@ -29,7 +30,12 @@ public class WebInterfaceHandler implements HttpHandler {
         logger.info("Received HTTP Request with method " + method +
                 ". Endpoint: " + path + ". From: " + remoteAddr);
 
-        String params = httpExchange.getRequestURI().getQuery();
+        String paramString = httpExchange.getRequestURI().getQuery();
+        HashMap<String, String> paramsMap = null;
+
+        if (paramString != null) {
+            paramsMap = getParams(paramString);
+        }
 
         OutputStream responseStream = httpExchange.getResponseBody();
         Headers responseHeaders = httpExchange.getResponseHeaders();
@@ -113,7 +119,7 @@ public class WebInterfaceHandler implements HttpHandler {
                 }
                 break;
             case "/api/ticket":
-                String ticketIdStr = params.split("=")[1];
+                String ticketIdStr = paramsMap.get("ticketId");
                 int ticketId = Integer.parseInt(ticketIdStr);
                 if (method.equals("GET")) {
                     try {
@@ -128,6 +134,11 @@ public class WebInterfaceHandler implements HttpHandler {
                         Ticket ticket = DBConnect.getTicket(ticketId);
                         if (ticket != null) {
                             ticket.addMessage(message);
+                            if (paramsMap.get("state")!=null) {
+                                ticket.changeState(paramsMap.get("state"));
+                            } else {
+                                ticket.changeState("waiting");
+                            }
                             DBConnect.updateTicket(ticket);
                             responseString.append(responseBody.toJson(ticket));
                         } else {
@@ -150,5 +161,20 @@ public class WebInterfaceHandler implements HttpHandler {
         responseStream.write(responseBytes);
         responseStream.flush();
         httpExchange.close();
+    }
+
+    public HashMap<String, String> getParams(String queryString) {
+        try {
+            HashMap<String, String> paramsMap = new HashMap<>();
+            String[] paramsArray = queryString.split("&");
+            for (String param : paramsArray) {
+                String[] keyValue = param.split("=");
+                paramsMap.put(keyValue[0], keyValue[1]);
+            }
+            return paramsMap;
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+            return null;
+        }
     }
 }

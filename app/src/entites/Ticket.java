@@ -9,7 +9,7 @@ public class Ticket {
     private final String title;
     private final String requester;
     private ArrayList<String> operator;
-    private final String state;
+    private String state;
     private Message[] messages;
     private int totalMessages;
 
@@ -63,5 +63,9 @@ public class Ticket {
         messages[totalMessages] = message;
         this.messages = messages;
         this.totalMessages++;
+    }
+
+    public void changeState(String state) {
+        this.state = state;
     }
 }

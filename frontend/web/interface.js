@@ -536,14 +536,16 @@ function buildMessageForm() {
     input.className = "message-field font-header-6";
     form.append(input);
 
-    var stateList = [
-        {value: "waiting", text: "Ожидает ответ оператора"},
-        {value: "freeze", text: "Ожидает ответ клиента"},
-        {value: "closed", text: "Закрыта"}
-    ]
+    if (user['role'] != "client") {
+        var stateList = [
+            {value: "freeze", text: "Ожидает ответ клиента"},
+            {value: "waiting", text: "Ожидает ответ оператора"},
+            {value: "closed", text: "Закрыта"}
+        ]
 
-    var stateDropdown = buildDropdown('ticket-state-dropdown', stateList);
-    form.append(stateDropdown);
+        var stateDropdown = buildDropdown("ticket-state-dropdown", stateList);
+        form.append(stateDropdown);
+    }
 
     var button = document.createElement('button');
     button.className = "button-text z-axis-1 font-button";
@@ -555,8 +557,19 @@ function buildMessageForm() {
 }
 
 async function sendMessage() {
+    var ticketStateItem = document.getElementById("ticket-state-dropdown");
+    var ticketState = "waiting";
+
+    if (ticketStateItem != null) {
+        ticketState = ticketStateItem.value;
+    }
+
     config.method = "post";
-    config.url = "/api/ticket?ticketId=" + document.location.search.split("=")[1];;
+    config.url = "/api/ticket";
+    config.params = {
+        ticketId: document.location.search.split("=")[1],
+        state: ticketState
+    }
     
     var date = new Date().toJSON();
     var text = document.getElementById("message-text-field").value;
