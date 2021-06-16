@@ -23,6 +23,7 @@ public class DBConnect {
     private static MongoCollection<Document> usersCollection;
     private static MongoCollection<Document> ticketsCollection;
     private static MongoCollection<Document> sessionsCollection;
+    private static MongoCollection<Document> operatorsCollection;
 
     public static void setDbProperties(String host, int port) {
         logger = new CustomLogger(DBConnect.class.getName());
@@ -32,6 +33,7 @@ public class DBConnect {
         usersCollection = database.getCollection("users");
         ticketsCollection = database.getCollection("tickets");
         sessionsCollection = database.getCollection("sessions");
+        operatorsCollection = database.getCollection("operators");
     }
 
     public static boolean insertUser(User user) {
@@ -287,4 +289,23 @@ public class DBConnect {
         }
     }
 
+    public static Operator getOperatorStatus(String username) {
+        Document document = operatorsCollection.find(eq("username", username)).first();
+        Operator operator;
+        if (document != null) {
+            operator = new Operator(document.getString("username"), document.getString("status"));
+        } else {
+            operator = new Operator(username, "offline");
+            operatorsCollection.insertOne(operator.toDocument());
+        }
+        return operator;
+    }
+
+    public static Operator changeOperatorStatus(String username) {
+        Operator operator = getOperatorStatus(username);
+        operator.changeStatus();
+        Document document = operator.toDocument();
+        operatorsCollection.replaceOne(eq("username", username), document);
+        return operator;
+    }
 }

@@ -55,6 +55,11 @@ function buildTopBar(pageTitle) {
     div.appendChild(button);
     div.appendChild(p);
 
+    if (user['role']!="client") {
+        let statusSwitcher = createStatusSwitcher();
+        div.appendChild(statusSwitcher);
+    }
+    
     document.body.appendChild(div);
 }
 
@@ -786,4 +791,63 @@ function stateLocalization(state) {
             break;
     }
     return ticketStateString;
+}
+
+function createStatusSwitcher() {
+    var div = document.createElement('div');
+    div.id = "status-block";
+
+    var divText = document.createElement('div');
+    divText.className = "font-header-6";
+    divText.textContent = "Готов обрабатывать заявки:";
+    div.append(divText);
+
+    var divSwitcher = document.createElement('div');
+    divSwitcher.id = "status-switcher";
+    divSwitcher.className = "status-switcher-off";
+
+    var divOnline = document.createElement('div');
+    divOnline.id = "switcher";
+    divOnline.className = "font-subtitle-1 switcher-off";
+    divOnline.textContent = "";
+
+    divSwitcher.append(divOnline);
+    divSwitcher.onclick = function changeStatus() {
+        divSwitcher.classList.toggle("status-switcher-off");
+        divSwitcher.classList.toggle("status-switcher-on");
+        divOnline.classList.toggle("switcher-off");
+        divOnline.classList.toggle("switcher-on");
+        operatorStatus("patch");
+    };
+
+    div.append(divSwitcher);
+    operatorStatus("get");
+
+    return div;
+}
+
+function operatorStatus(method) {
+    config.url = "/api/users/status";
+    config.method = method;
+
+    axios(config)
+        .then(function (response) {
+            body = response.data;
+            var divSwitcher = document.getElementById("status-switcher");
+            var divOnline = document.getElementById("switcher");
+            if (body['status'] == "offline") {
+                divSwitcher.classList.add("status-switcher-off");
+                divSwitcher.classList.remove("status-switcher-on");
+                divOnline.classList.add("switcher-off");
+                divOnline.classList.remove("switcher-on");
+            } else {
+                divSwitcher.classList.remove("status-switcher-off");
+                divSwitcher.classList.add("status-switcher-on");
+                divOnline.classList.remove("switcher-off");
+                divOnline.classList.add("switcher-on");
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
 }

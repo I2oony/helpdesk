@@ -47,10 +47,11 @@ public class WebInterfaceHandler implements HttpHandler {
         StringBuilder responseString = new StringBuilder();
 
         User user;
+        String username = httpExchange.getPrincipal().getUsername();
 
         switch (path) {
             case "/api/users":
-                user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
+                user = DBConnect.getUser(username);
                 responseString.append(responseBody.toJson(user));
                 break;
             case "/api/users/list":
@@ -69,7 +70,7 @@ public class WebInterfaceHandler implements HttpHandler {
                 break;
             case "/api/users/changeInfo":
                 if (method.equals("PATCH")) {
-                    user = DBConnect.getUser(httpExchange.getPrincipal().getUsername());
+                    user = DBConnect.getUser(username);
                     try {
                         ChangePassword passwordData = new Gson().fromJson(requestReader, ChangePassword.class);
                         if (Authentication.checkPass(passwordData.oldPassword.toCharArray(), DBConnect.getUsersPassword(user.getUsername()))) {
@@ -109,9 +110,25 @@ public class WebInterfaceHandler implements HttpHandler {
                     responseCode = 403;
                 }
                 break;
+            case "/api/users/status":
+                if (method.equals("GET")) {
+                    Operator operator = DBConnect.getOperatorStatus(username);
+                    responseString.append(responseBody.toJson(operator, Operator.class));
+                } else if (method.equals("PATCH")) {
+                    try {
+                        Operator operator = DBConnect.changeOperatorStatus(username);
+                        responseString.append(responseBody.toJson(operator, Operator.class));
+                    } catch (Exception e) {
+                        responseCode = 403;
+                        logger.warning(e.getMessage());
+                    }
+                } else {
+                    responseHeaders.add("Allow", "PATCH, GET");
+                    responseCode = 405;
+                }
+                break;
             case "/api/tickets":
                 try {
-                    String username = httpExchange.getPrincipal().getUsername();
                     Ticket[] tickets = DBConnect.getTicketsList(username);
                     responseString.append(responseBody.toJson(tickets));
                 } catch (Exception e) {

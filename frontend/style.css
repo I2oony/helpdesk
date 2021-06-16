@@ -306,3 +306,52 @@ h3 {
 #new-ticket-form > * {
     margin-right: 1rem;
 }
+
+#status-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 2rem;
+    margin-left: auto;
+}
+
+#status-switcher {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+    width: 3rem;
+    height: 1rem;
+
+    border-radius: 0.5rem;
+}
+
+#switcher {
+    height: 0.5rem;
+    width: 0.5rem;
+    border-radius: 1.5rem;
+    padding: 0.5rem;
+    color: var(--color-on-secondary);
+    background-color: var(--color-secondary-dark);
+}
+
+.status-switcher-off {
+    background-color: var(--color-error);
+}
+
+.status-switcher-on {
+    background-color: var(--color-secondary);
+}
+
+.switcher-off {
+    position: relative;
+    left: -0.5rem;
+    transition: all 0.5s;
+    background-color: var(--color-error);
+}
+
+.switcher-on {
+    position: relative;
+    left: 2rem;
+    transition: all 0.5s;
+    background-color: var(--color-secondary);
+}
