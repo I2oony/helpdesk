@@ -21,7 +21,11 @@ public class Ticket {
         this.operator = operator;
         this.state = state;
         this.messages = messages;
-        this.totalMessages = messages.length;
+        if (messages != null) {
+            this.totalMessages = messages.length;
+        } else {
+            this.totalMessages = 0;
+        }
     }
 
     public int getId() {

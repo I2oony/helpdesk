@@ -145,24 +145,30 @@ public class DBConnect {
         }
 
         int i = 0;
-        try (MongoCursor<Document> cursor = ticketsCollection
-                .find(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1))
-                .projection(fields(include("ticketId", "title", "requester", "operator", "state", "messages"),
+        try {
+            MongoCursor<Document> cursor = ticketsCollection
+                    .find(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1))
+                    .projection(fields(include("ticketId", "title", "requester", "operator", "state", "messages"),
                             slice("messages", -1)))
-                .sort(new BasicDBObject("ticketId", 1))
-                .iterator()) {
+                    .sort(new BasicDBObject("ticketId", -1))
+                    .iterator();
             int length = (int) ticketsCollection.count(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1));
             tickets = new Ticket[length];
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
-                Message[] messages = new Message[1];
-                messages[0] = new Message(
-                        messageDoc.getInteger("id"),
-                        messageDoc.getString("from"),
-                        messageDoc.getString("text"),
-                        messageDoc.getDate("date")
-                );
+                Message[] messages;
+                if (document.get("messages", ArrayList.class).size()!=0) {
+                    Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
+                    messages = new Message[1];
+                    messages[0] = new Message(
+                            messageDoc.getInteger("id"),
+                            messageDoc.getString("from"),
+                            messageDoc.getString("text"),
+                            messageDoc.getDate("date")
+                    );
+                } else {
+                    messages = null;
+                }
                 tickets[i] = new Ticket(
                         document.getInteger("ticketId"),
                         document.getString("title"),
@@ -173,9 +179,12 @@ public class DBConnect {
                 );
                 i++;
             }
+            return tickets;
+        } catch (Exception e) {
+            logger.warning("An error occured while fetching the tickets list: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-
-        return tickets;
     }
 
     public static Ticket getTicket(int ticketId) {

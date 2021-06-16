@@ -121,7 +121,25 @@ async function buildDashboardPage() {
 
     var newTicketBlock = buildBlock("new-ticket-block");
     newTicketBlock.append(buildBlockHeader("Создать новую заявку"));
+    
+    var newTicketForm = document.createElement('form');
+    newTicketForm.id = "new-ticket-form";
+    newTicketForm.method = "dialog";
+    newTicketForm.onsubmit = createNewTicket;
+    var titleLabel = document.createElement('div');
+    titleLabel.className = "font-header-6";
+    titleLabel.textContent = "Тема обращения:";
+    newTicketForm.append(titleLabel);
+    var titleField = document.createElement('input');
+    titleField.id = "ticket-title-field";
+    titleField.className = "field font-header-6";
+    newTicketForm.append(titleField);
+    var createButton = buildButton("Создать", createNewTicket);
+    newTicketForm.append(createButton);
+
+    newTicketBlock.append(newTicketForm);
     dashboardPage.append(newTicketBlock);
+
 
     var ticketsListBlock = buildBlock("tickets-list");
     ticketsListBlock.append(buildBlockHeader("Список существующих заявок"));
@@ -148,6 +166,33 @@ async function buildDashboardPage() {
     ticketsListBlock.append(table);
     dashboardPage.append(ticketsListBlock);
     document.body.append(dashboardPage);
+}
+
+async function createNewTicket() {
+    var title = document.getElementById("ticket-title-field").value;
+    config.method = "post";
+    config.url = "/api/tickets/create";
+
+    var body = {
+        title: title,
+        requester: user['username'],
+        messages: [],
+        operator: []
+    };
+
+    config.data = JSON.stringify(body);
+
+    var respBody = null;
+    await axios(config)
+        .then(function (response) {
+            respBody = response.data;
+            var url = "https://" + document.location.hostname + "/web/tickets" + "?id=" + respBody['id'];
+            document.location.assign(url);
+        })
+        .catch(function (response) {
+            respBody = null;
+            console.log("Something went wrong while creating the ticket!")
+        });
 }
 
 function buildTicketBody(ticketInfo) {
@@ -179,8 +224,12 @@ function buildTicketBody(ticketInfo) {
     var td4 = document.createElement('td');
     td4.className = "col4";
     if (ticketInfo.date == null) {
-        var date = new Date(ticketInfo.messages[0].date);
-        td4.textContent = date.toLocaleString();
+        if (ticketInfo.messages != null) {
+            var date = new Date(ticketInfo.messages[0].date);
+            td4.textContent = date.toLocaleString();
+        } else {
+            td4.textContent = "-";
+        }
     } else {
         td4.textContent = ticketInfo.date;
     }
@@ -465,12 +514,12 @@ async function buildTicketPage(ticketId, user) {
     ticketPage.className = "main-content";
 
     var ticketInfoBlock = buildBlock("ticket-info-block");
-    ticketInfoBlock.append(buildBlockHeader("Информация о заявке"));
+    ticketInfoBlock.append(buildBlockHeader("\"" + body["title"] + "\""));
     ticketInfoBlock.append(buildTicketInfoDiv(body['requester'], body['state']));
     ticketPage.append(ticketInfoBlock);
 
-    var pageTitle = document.getElementById("page-title");
-    pageTitle.textContent = pageTitle.textContent + ": \"" + body["title"] + "\"";
+    //var pageTitle = document.getElementById("page-title");
+    //pageTitle.textContent = pageTitle.textContent + ": \"" + body["title"] + "\"";
 
     var messagesContent = document.createElement('div');
     messagesContent.id = "messages-block";
@@ -506,6 +555,13 @@ function buildMessagesList(messages, username) {
     } else {
         messagesList = document.createElement('div');
         messagesList.id = "messages-list";
+    }
+
+    if (messages.length == 0) {
+        var firstMessageTip = document.createElement('div');
+        firstMessageTip.className = "font-subtitle-2";
+        firstMessageTip.innerHTML = "<i>Напишите первое сообщение!</i><br>";
+        messagesList.append(firstMessageTip);
     }
 
     for (message in messages) {
@@ -614,6 +670,7 @@ async function sendMessage() {
         });
     
     document.getElementById("message-text-field").value = "";
+    config.params = {};
 }
 
 async function fetchTicketData(ticketId) {
@@ -634,12 +691,13 @@ async function fetchTicketData(ticketId) {
             console.log("Error while fetching the ticket data.");
         });
     
+    config.params = {};
     return body;
 }
 
 async function checkForNewMessages(ticketId) {
     var body = await fetchTicketData(ticketId);
-    buildMessagesList(body["messages"], user["username"]).parentElement.scrollTo(0, 99999);
+    buildMessagesList(body["messages"], user["username"]);
     buildTicketInfoDiv(body['requester'], body['state']);
 }
 

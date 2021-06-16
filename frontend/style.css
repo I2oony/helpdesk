@@ -212,11 +212,11 @@ h3 {
 }
 
 #tickets-list .col1 {
-    width: 40%;
+    width: 45%;
 }
 
 #tickets-list .col2 {
-    width: 20%;
+    width: 15%;
 }
 
 #tickets-list .col3 {
@@ -295,4 +295,14 @@ h3 {
     background-color: var(--color-primary);
     border-radius: 0.5rem 0.5rem 0 0.5rem;
     margin: 0 0 0.5rem auto;
+}
+
+#new-ticket-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#new-ticket-form > * {
+    margin-right: 1rem;
 }
