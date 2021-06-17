@@ -154,32 +154,45 @@ async function buildDashboardPage() {
 
     ticketsListBlock.classList.add("font-header-6");
 
-    var header = {
-        id: "No.",
-        title: "Тема",
-        requester: "Отправитель",
-        state: "Состояние",
-        date: "Время"
-    }
+    var table = await buildTicketsList();
 
-    var table = document.createElement('table');
-    table.id = "tickets-table";
+    ticketsListBlock.append(table);
+
+    dashboardPage.append(ticketsListBlock);
+    document.body.append(dashboardPage);
+
+    setInterval(buildTicketsList, 30000);
+}
+
+async function buildTicketsList() {
+    var table = document.getElementById("tickets-table");
+
+    if (table!=null) {
+        table.innerHTML = '';
+    } else {
+        var header = {
+            id: "No.",
+            title: "Тема",
+            requester: "Отправитель",
+            state: "Состояние",
+            date: "Время"
+        }
+        var table = document.createElement('table');
+        table.id = "tickets-table";
+        table.append(buildTicketBody(header));
+    }
     
-    table.append(buildTicketBody(header));
     var ticketList = await fetchTicketsList();
     ticketList = sortTicketsList(ticketList);
     for (ticket in ticketList) {
         table.append(buildTicketBody(ticketList[ticket]));
     }
 
-    ticketsListBlock.append(table);
-    dashboardPage.append(ticketsListBlock);
-    document.body.append(dashboardPage);
+    return table;
 }
 
 function sortTicketsList(ticketsList) {
     ticketsList.sort(function (a, b) {
-        console.log(a.state, b.state);
         if (a.state == "waiting" && (b.state === "freeze" || b.state ===  "created" || b.state ===  "closed")) {
             return -1;
         } else if (a.state == "freeze" && (b.state ===  "created" || b.state ===  "closed")) {
@@ -550,9 +563,6 @@ async function buildTicketPage(ticketId, user) {
     ticketInfoBlock.append(buildTicketInfoDiv(body['requester'], body['state']));
     ticketPage.append(ticketInfoBlock);
 
-    //var pageTitle = document.getElementById("page-title");
-    //pageTitle.textContent = pageTitle.textContent + ": \"" + body["title"] + "\"";
-
     var messagesContent = document.createElement('div');
     messagesContent.id = "messages-block";
     messagesContent.className = "surface";
@@ -850,7 +860,7 @@ function stateLocalization(state) {
     var ticketStateString;
     switch (state) {
         case "created":
-            ticketStateString = "Создан";
+            ticketStateString = "Создана";
             break;
         case "waiting":
             ticketStateString = "Ожидает ответ оператора";
