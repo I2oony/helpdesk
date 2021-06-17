@@ -127,6 +127,7 @@ async function buildDashboardPage() {
     var newTicketBlock = buildBlock("new-ticket-block");
     newTicketBlock.append(buildBlockHeader("Создать новую заявку"));
     
+    var newTicketDiv = document.createElement('div');
     var newTicketForm = document.createElement('form');
     newTicketForm.id = "new-ticket-form";
     newTicketForm.method = "dialog";
@@ -138,11 +139,13 @@ async function buildDashboardPage() {
     var titleField = document.createElement('input');
     titleField.id = "ticket-title-field";
     titleField.className = "field font-header-6";
+    titleField.maxLength = 100;
     newTicketForm.append(titleField);
     var createButton = buildButton("Создать", null);
     newTicketForm.append(createButton);
+    newTicketDiv.append(newTicketForm);
 
-    newTicketBlock.append(newTicketForm);
+    newTicketBlock.append(newTicketDiv);
     dashboardPage.append(newTicketBlock);
 
 
@@ -632,9 +635,7 @@ function buildMessageForm() {
         form.append(stateDropdown);
     }
 
-    var button = document.createElement('button');
-    button.className = "button-text z-axis-1 font-button";
-    button.textContent = "Отправить";
+    var button = buildButton("Отправить", null);
 
     form.append(button);
 
@@ -642,6 +643,9 @@ function buildMessageForm() {
 }
 
 async function sendMessage() {
+    var form = document.getElementById("message-form");
+    form.onsubmit = null;
+
     var ticketStateItem = document.getElementById("ticket-state-dropdown");
     var ticketState = "waiting";
 
@@ -674,13 +678,14 @@ async function sendMessage() {
             respBody = response.data;
             buildMessagesList(respBody["messages"], user["username"]).parentElement.scrollTo(0, 99999);
             buildTicketInfoDiv(respBody['requester'], respBody['state']);
+            form.onsubmit = sendMessage;
+            document.getElementById("message-text-field").value = "";
         })
         .catch(function (response) {
             respBody = null;
             console.log("Something went wrong while sending the message!")
+            form.onsubmit = sendMessage;
         });
-    
-    document.getElementById("message-text-field").value = "";
     config.params = {};
 }
 
@@ -728,9 +733,17 @@ function buildBlock(id) {
 
 function buildBlockHeader(title) {
     var header = document.createElement('h3');
-    header.className = "font-header-4";
+    header.className = "font-header-4 surface-header";
     header.textContent = title;
+    header.onclick = hideElement;
     return header;
+}
+
+function hideElement(event) {
+    var elements = event.target.parentElement.childNodes;
+    for (i=1; i<elements.length; i++) {
+        elements[i].classList.toggle("hide-element");
+    }
 }
 
 function buildInputField(type, id, placeholder) {
