@@ -597,7 +597,7 @@ function buildMessageBlock(message, username) {
 
     var text = document.createElement('div');
     if (message['text']!= ""){
-        text.textContent = message['text'];
+        text.innerHTML = newRowSymbolCheck(message['text']);
     } else {
         text.innerHTML = "<i>Состояние заявки изменено.</i>";
     }
@@ -613,26 +613,55 @@ function buildMessageBlock(message, username) {
     return div;
 }
 
+function newRowSymbolCheck(string) {
+    var newString = "";
+    for (i in string) {
+        if (string[i] == "\n") {
+            newString += "<br>";
+        } else {
+            newString += string[i];
+        }
+    }
+    return newString;
+}
+
 function buildMessageForm() {
     var form = document.createElement('form');
     form.method = "dialog";
     form.onsubmit = sendMessage;
     form.id = "message-form"
 
-    var input = document.createElement('input');
+    var input = document.createElement('textarea');
     input.id = "message-text-field";
     input.className = "message-field font-header-6";
+    input.placeholder = "Напишите здесь своё сообщение";
+    input.autofocus = true;
+    input.rows = 3;
     form.append(input);
 
     if (user['role'] != "client") {
+        var divDropdowns = document.createElement('div');
+
+        divDropdowns.className = "dropdown-block"
         var stateList = [
             {value: "freeze", text: "Ожидает ответ клиента"},
             {value: "waiting", text: "Ожидает ответ оператора"},
             {value: "closed", text: "Закрыта"}
         ]
-
         var stateDropdown = buildDropdown("ticket-state-dropdown", stateList);
-        form.append(stateDropdown);
+        divDropdowns.append(stateDropdown);
+        
+        // TODO: make the list from received from server templates
+        var templatesList = [
+            {value: "id0", text: "Шаблоны"},
+            {value: "id1", text: "Шаблон 1"},
+            {value: "id2", text: "Шаблон 2"}
+        ]
+        var templatesDropdown = buildDropdown("message-template-dropdown", templatesList);
+        templatesDropdown.onchange = appendTemplateText;
+        divDropdowns.append(templatesDropdown);
+
+        form.append(divDropdowns)
     }
 
     var button = buildButton("Отправить", null);
@@ -640,6 +669,13 @@ function buildMessageForm() {
     form.append(button);
 
     return form;
+}
+
+function appendTemplateText(event) {
+    var textArea = document.getElementById("message-text-field");
+    var selectedItem = event.target.options.selectedIndex;
+    var dropdownItem = document.getElementById("message-template-dropdown")[selectedItem].value;
+    console.log(dropdownItem);
 }
 
 async function sendMessage() {
