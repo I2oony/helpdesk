@@ -16,6 +16,8 @@ import entites.*;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Sorts.orderBy;
 
 public class DBConnect {
     static CustomLogger logger;
@@ -119,8 +121,9 @@ public class DBConnect {
         }
     }
 
-    public static int getTicketsCount() {
-        return (int) ticketsCollection.count();
+    public static int getLastTicketNumber() {
+        return ticketsCollection.find().sort(orderBy(descending("ticketId")))
+                .first().getInteger("ticketId");
     }
 
     public static Ticket[] getTicketsList(String username) {
@@ -221,7 +224,7 @@ public class DBConnect {
 
     public static boolean insertTicket(Ticket ticket) {
         try {
-            ticket.setId(getTicketsCount());
+            ticket.setId(getLastTicketNumber() + 1);
             ticket.setState("created");
             Document document = ticket.toDocument();
             ticketsCollection.insertOne(document);
@@ -292,7 +295,6 @@ public class DBConnect {
     public static Operator getOperatorStatus(String username) {
         logger.info("Getting current status for the operator with username: " + username);
         Document document = operatorsCollection.find(eq("username", username)).first();
-        System.out.println(document);
         Operator operator;
         if (document != null) {
             operator = new Operator(document.getString("username"), document.getString("state"));

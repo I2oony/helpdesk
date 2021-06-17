@@ -167,6 +167,7 @@ async function buildDashboardPage() {
     
     table.append(buildTicketBody(header));
     var ticketList = await fetchTicketsList();
+    ticketList = sortTicketsList(ticketList);
     for (ticket in ticketList) {
         table.append(buildTicketBody(ticketList[ticket]));
     }
@@ -174,6 +175,22 @@ async function buildDashboardPage() {
     ticketsListBlock.append(table);
     dashboardPage.append(ticketsListBlock);
     document.body.append(dashboardPage);
+}
+
+function sortTicketsList(ticketsList) {
+    ticketsList.sort(function (a, b) {
+        console.log(a.state, b.state);
+        if (a.state == "waiting" && (b.state === "freeze" || b.state ===  "created" || b.state ===  "closed")) {
+            return -1;
+        } else if (a.state == "freeze" && (b.state ===  "created" || b.state ===  "closed")) {
+            return -1;
+        } else if (a.state == "created" && b.state ===  "closed") {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+    return ticketsList;
 }
 
 async function createNewTicket() {
@@ -388,6 +405,7 @@ function showSuccess(text, insertAfter) {
     }
 }
 
+// TODO: add an ability to create templates
 async function buildSystemPage() {
     let systemPage = buildMainContent("system-page");
 
