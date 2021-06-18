@@ -10,7 +10,7 @@ public class EmailSender {
     private static Session session;
     private static String email;
 
-    public static void configureSession(String host, String port, String auth, String emailAddress, String password, ) {
+    public static void configureSession(String host, String port, String auth, String emailAddress, String password) {
         logger = new CustomLogger(EmailSender.class.getName());
 
         email = emailAddress;
