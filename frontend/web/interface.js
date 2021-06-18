@@ -897,10 +897,6 @@ function createStatusSwitcher() {
 
     divSwitcher.append(divOnline);
     divSwitcher.onclick = function changeStatus() {
-        divSwitcher.classList.toggle("status-switcher-off");
-        divSwitcher.classList.toggle("status-switcher-on");
-        divOnline.classList.toggle("switcher-off");
-        divOnline.classList.toggle("switcher-on");
         operatorStatus("patch");
     };
 
