@@ -915,7 +915,7 @@ function operatorStatus(method) {
             body = response.data;
             var divSwitcher = document.getElementById("status-switcher");
             var divOnline = document.getElementById("switcher");
-            if (body['state'] == "offline") {
+            if (body['status'] == "offline") {
                 divSwitcher.classList.add("status-switcher-off");
                 divSwitcher.classList.remove("status-switcher-on");
                 divOnline.classList.add("switcher-off");
