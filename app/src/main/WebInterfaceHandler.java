@@ -9,11 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import entites.structures.ChangePassword;
-import services.Authentication;
-import services.CustomLogger;
+import services.*;
 import entites.*;
-import services.DBConnect;
-import services.EmailSender;
 
 public class WebInterfaceHandler implements HttpHandler {
     static CustomLogger logger;
@@ -111,12 +108,13 @@ public class WebInterfaceHandler implements HttpHandler {
                 }
                 break;
             case "/api/users/state":
+                Operator operator = DBConnect.getOperatorStatus(username);
                 if (method.equals("GET")) {
-                    Operator operator = DBConnect.getOperatorStatus(username);
                     responseString.append(responseBody.toJson(operator, Operator.class));
                 } else if (method.equals("PATCH")) {
                     try {
-                        Operator operator = DBConnect.changeOperatorStatus(username);
+                        operator.changeStatus();
+                        DBConnect.updateOperator(operator);
                         responseString.append(responseBody.toJson(operator, Operator.class));
                     } catch (Exception e) {
                         responseCode = 403;
@@ -139,6 +137,7 @@ public class WebInterfaceHandler implements HttpHandler {
                 if (method.equals("POST")) {
                     try {
                         Ticket newTicket = new Gson().fromJson(requestReader, Ticket.class);
+                        newTicket.setPriority(0);
                         DBConnect.insertTicket(newTicket);
                         responseString.append(responseBody.toJson(newTicket));
                     } catch (Exception e) {
@@ -169,6 +168,9 @@ public class WebInterfaceHandler implements HttpHandler {
                                 ticket.changeState(paramsMap.get("state"));
                             } else {
                                 ticket.changeState("waiting");
+                            }
+                            if (ticket.getState().equals("waiting")) {
+                                TicketsQueueChecker.checkTicketPriority(ticket);
                             }
                             DBConnect.updateTicket(ticket);
                             responseString.append(responseBody.toJson(ticket));

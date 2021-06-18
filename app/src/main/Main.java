@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 
 public class Main {
@@ -30,7 +32,7 @@ public class Main {
             configFile = new FileInputStream("src/resources/config.properties");
             property.load(configFile);
         } catch (IOException e) {
-            logger.warning("An error occurred while opening config file occurred. The default configuration was set." +
+            logger.warning("An error occurred while opening config file. The default configuration was set." +
                     "\nThe values of default config will be saved to the " + defaultConfigFile);
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(defaultConfigFile);
@@ -49,6 +51,10 @@ public class Main {
         int port = Integer.parseInt(property.getProperty("httpPort"));
 
         EmailSender.configureSession(property.getProperty("emailAddress"), property.getProperty("emailPassword"));
+
+        TimerTask ticketsQueueChecker = new TicketsQueueChecker();
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(ticketsQueueChecker, 30000, 30000);
 
         try {
             InetSocketAddress address = new InetSocketAddress(host, port);

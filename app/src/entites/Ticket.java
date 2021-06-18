@@ -12,9 +12,10 @@ public class Ticket {
     private String state;
     private Message[] messages;
     private int totalMessages;
+    private int priority;
 
     // Creating an instance of a class for an existing ticket.
-    public Ticket(int id, String title, String requester, ArrayList<String> operator, String state, Message[] messages) {
+    public Ticket(int id, String title, String requester, ArrayList<String> operator, String state, Message[] messages, int priority) {
         this.id = id;
         this.title = title;
         this.requester = requester;
@@ -26,6 +27,7 @@ public class Ticket {
         } else {
             this.totalMessages = 0;
         }
+        this.priority = priority;
     }
 
     public int getId() {
@@ -34,6 +36,10 @@ public class Ticket {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getState() {
+        return this.state;
     }
 
     public void setState(String state) {
@@ -52,7 +58,8 @@ public class Ticket {
                 .append("requester", requester)
                 .append("operator", operator)
                 .append("state", state)
-                .append("messages", documentMessages);
+                .append("messages", documentMessages)
+                .append("priority", priority);
         return document;
     }
 
@@ -67,5 +74,21 @@ public class Ticket {
 
     public void changeState(String state) {
         this.state = state;
+    }
+
+    public int getPriority() {
+        return this.priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public ArrayList<String> getOperators() {
+        return operator;
+    }
+
+    public void addOperator(String username) {
+        operator.add(username);
     }
 }

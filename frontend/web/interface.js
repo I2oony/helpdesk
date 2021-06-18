@@ -169,18 +169,17 @@ async function buildTicketsList() {
 
     if (table!=null) {
         table.innerHTML = '';
-    } else {
-        var header = {
-            id: "No.",
-            title: "Тема",
-            requester: "Отправитель",
-            state: "Состояние",
-            date: "Время"
-        }
-        var table = document.createElement('table');
-        table.id = "tickets-table";
-        table.append(buildTicketBody(header));
     }
+    var header = {
+        id: "No.",
+        title: "Тема",
+        requester: "Отправитель",
+        state: "Состояние",
+        date: "Время"
+    }
+    var table = document.createElement('table');
+    table.id = "tickets-table";
+    table.append(buildTicketBody(header));
     
     var ticketList = await fetchTicketsList();
     ticketList = sortTicketsList(ticketList);

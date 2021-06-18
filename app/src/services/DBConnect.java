@@ -14,6 +14,8 @@ import org.bson.Document;
 
 import entites.*;
 
+import javax.print.Doc;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.descending;
@@ -122,8 +124,13 @@ public class DBConnect {
     }
 
     public static int getLastTicketNumber() {
-        return ticketsCollection.find().sort(orderBy(descending("ticketId")))
-                .first().getInteger("ticketId");
+        try {
+            int num = ticketsCollection.find().sort(orderBy(descending("ticketId")))
+                    .first().getInteger("ticketId");
+            return num;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public static Ticket[] getTicketsList(String username) {
@@ -153,43 +160,62 @@ public class DBConnect {
         try {
             MongoCursor<Document> cursor = ticketsCollection
                     .find(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1))
-                    .projection(fields(include("ticketId", "title", "requester", "operator", "state", "messages"),
+                    .projection(fields(include("ticketId", "title", "requester", "operator", "state", "messages", "priority"),
                             slice("messages", -1)))
                     .sort(new BasicDBObject("ticketId", -1))
                     .iterator();
             int length = (int) ticketsCollection.count(searchQuery!=null?eq(searchQuery[0], searchQuery[1]):gt("ticketId", -1));
             tickets = new Ticket[length];
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-                Message[] messages;
-                if (document.get("messages", ArrayList.class).size()!=0) {
-                    Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
-                    messages = new Message[1];
-                    messages[0] = new Message(
-                            messageDoc.getInteger("id"),
-                            messageDoc.getString("from"),
-                            messageDoc.getString("text"),
-                            messageDoc.getDate("date")
-                    );
-                } else {
-                    messages = null;
-                }
-                tickets[i] = new Ticket(
-                        document.getInteger("ticketId"),
-                        document.getString("title"),
-                        document.getString("requester"),
-                        document.get("operator", ArrayList.class),
-                        document.getString("state"),
-                        messages
-                );
-                i++;
-            }
-            return tickets;
+            return getTickets(tickets, i, cursor);
         } catch (Exception e) {
             logger.warning("An error occured while fetching the tickets list: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Ticket[] getTicketsInQueue() {
+        try {
+            int length = (int) ticketsCollection.count(ne("priority", 0));
+            Ticket[] tickets = new Ticket[length];
+            int i = 0;
+            MongoCursor<Document> cursor = ticketsCollection.find(ne("priority", 0)).iterator();
+            return getTickets(tickets, i, cursor);
+        } catch (Exception e) {
+            logger.warning("An error occured while fetching the tickets list: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Ticket[] getTickets(Ticket[] tickets, int i, MongoCursor<Document> cursor) {
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            Message[] messages;
+            if (document.get("messages", ArrayList.class).size()!=0) {
+                Document messageDoc = (Document) document.get("messages", ArrayList.class).get(0);
+                messages = new Message[1];
+                messages[0] = new Message(
+                        messageDoc.getInteger("id"),
+                        messageDoc.getString("from"),
+                        messageDoc.getString("text"),
+                        messageDoc.getDate("date")
+                );
+            } else {
+                messages = null;
+            }
+            tickets[i] = new Ticket(
+                    document.getInteger("ticketId"),
+                    document.getString("title"),
+                    document.getString("requester"),
+                    document.get("operator", ArrayList.class),
+                    document.getString("state"),
+                    messages,
+                    document.getInteger("priority")
+            );
+            i++;
+        }
+        return tickets;
     }
 
     public static Ticket getTicket(int ticketId) {
@@ -214,7 +240,8 @@ public class DBConnect {
                     document.getString("requester"),
                     document.get("operator", ArrayList.class),
                     document.getString("state"),
-                    messages
+                    messages,
+                    document.getInteger("priority")
             );
         } catch (Exception e) {
             logger.info("No such ticket exist: " + ticketId);
@@ -292,25 +319,50 @@ public class DBConnect {
         }
     }
 
+    public static ArrayList<Operator> getOnlineOperatorsList() {
+        logger.info("Getting operators with online status.");
+        MongoCursor<Document> cursor = operatorsCollection.find(eq("status", "online")).iterator();
+        int length = (int) operatorsCollection.count(eq("status", "online"));
+        ArrayList<Operator> operators = new ArrayList<>();
+        int i = 0;
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            operators.add(new Operator(
+                    document.getString("username"),
+                    document.getString("status"),
+                    document.get("tickets", ArrayList.class)
+            ));
+            i++;
+        }
+        return operators;
+    }
+
     public static Operator getOperatorStatus(String username) {
         logger.info("Getting current status for the operator with username: " + username);
         Document document = operatorsCollection.find(eq("username", username)).first();
         Operator operator;
         if (document != null) {
-            operator = new Operator(document.getString("username"), document.getString("state"));
+            operator = new Operator(
+                    document.getString("username"),
+                    document.getString("status"),
+                    document.get("tickets", ArrayList.class)
+            );
         } else {
-            operator = new Operator(username, "offline");
+            operator = new Operator(username, "offline", new ArrayList<>());
             operatorsCollection.insertOne(operator.toDocument());
         }
         return operator;
     }
 
-    public static Operator changeOperatorStatus(String username) {
-        logger.info("Changing status for the operator with username: " + username);
-        Operator operator = getOperatorStatus(username);
-        operator.changeStatus();
-        Document document = operator.toDocument();
-        operatorsCollection.replaceOne(eq("username", username), document);
-        return operator;
+    public static boolean updateOperator(Operator operator) {
+        try {
+            logger.info("Updating the operator with username: " + operator.getUsername());
+            Document document = operator.toDocument();
+            operatorsCollection.replaceOne(eq("username", operator.getUsername()), document);
+            return true;
+        } catch (Exception e) {
+            logger.warning("An error occurred while updating the operator" + e.getMessage());
+            return false;
+        }
     }
 }
