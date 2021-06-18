@@ -53,6 +53,15 @@ public class Main {
                 property.getProperty("emailAddress"),
                 property.getProperty("emailPassword"));
 
+        if (DBConnect.getUser("admin") == null) {
+            User admin = new User("admin", "none", User.Role.admin, "Admin", "Admin");
+            String randomPassword = Authentication.generateRandomPass();
+            admin.setPassword(randomPassword);
+            DBConnect.insertUser(admin);
+            logger.info("Created default admin with login: 'admin', password: '" + randomPassword + "'. " +
+                    "Please change it once you logged in the system.");
+        }
+
         TimerTask ticketsQueueChecker = new TicketsQueueChecker();
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(ticketsQueueChecker, 30000, 30000);
