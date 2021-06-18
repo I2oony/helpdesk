@@ -10,15 +10,15 @@ public class EmailSender {
     private static Session session;
     private static String email;
 
-    public static void configureSession(String emailAddress, String password) {
+    public static void configureSession(String host, String port, String auth, String emailAddress, String password, ) {
         logger = new CustomLogger(EmailSender.class.getName());
 
         email = emailAddress;
 
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.yandex.ru");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.socketFactory.port", port);
+        props.put("mail.smtp.auth", auth);
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
         session = Session.getDefaultInstance(props,
@@ -40,7 +40,9 @@ public class EmailSender {
             Transport.send(message);
             return true;
         } catch (Exception e) {
-            logger.warning("An error occurred while sending email: " + e.getMessage());
+            logger.warning("An error occurred while sending email. " +
+                    "You might not configured the auth credentials for SMTP server of your provider. " +
+                    "Please check the documentation to find out how to do it.");
             return false;
         }
     }

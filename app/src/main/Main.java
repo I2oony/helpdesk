@@ -5,7 +5,6 @@ import services.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.Date;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,17 +20,15 @@ public class Main {
         FileInputStream configFile;
         Properties property = new Properties();
 
-        Date currentDate = new Date();
-        String defaultConfigFile = "config_" + currentDate.getTime() + ".properties";
-        property.setProperty("dbHost", "localhost");
-        property.setProperty("dbPort", "27017");
-        property.setProperty("httpHost", "localhost");
-        property.setProperty("httpPort", "3000");
-
         try {
             configFile = new FileInputStream("src/resources/config.properties");
             property.load(configFile);
         } catch (IOException e) {
+            String defaultConfigFile = "config.properties";
+            property.setProperty("dbHost", "localhost");
+            property.setProperty("dbPort", "27017");
+            property.setProperty("httpHost", "localhost");
+            property.setProperty("httpPort", "3000");
             logger.warning("An error occurred while opening config file. The default configuration was set." +
                     "\nThe values of default config will be saved to the " + defaultConfigFile);
             try {
@@ -50,7 +47,11 @@ public class Main {
         String host = property.getProperty("httpHost");
         int port = Integer.parseInt(property.getProperty("httpPort"));
 
-        EmailSender.configureSession(property.getProperty("emailAddress"), property.getProperty("emailPassword"));
+        EmailSender.configureSession(property.getProperty("emailHost"),
+                property.getProperty("emailPort"),
+                property.getProperty("emailAuth"),
+                property.getProperty("emailAddress"),
+                property.getProperty("emailPassword"));
 
         TimerTask ticketsQueueChecker = new TicketsQueueChecker();
         Timer timer = new Timer(true);
