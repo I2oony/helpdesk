@@ -679,14 +679,14 @@ function buildMessageForm() {
         divDropdowns.append(stateDropdown);
         
         // TODO: make the list from received from server templates
-        var templatesList = [
-            {value: "id0", text: "Шаблоны"},
-            {value: "id1", text: "Шаблон 1"},
-            {value: "id2", text: "Шаблон 2"}
-        ]
-        var templatesDropdown = buildDropdown("message-template-dropdown", templatesList);
-        templatesDropdown.onchange = appendTemplateText;
-        divDropdowns.append(templatesDropdown);
+        // var templatesList = [
+        //     {value: "id0", text: "Шаблоны"},
+        //     {value: "id1", text: "Шаблон 1"},
+        //     {value: "id2", text: "Шаблон 2"}
+        // ]
+        // var templatesDropdown = buildDropdown("message-template-dropdown", templatesList);
+        // templatesDropdown.onchange = appendTemplateText;
+        // divDropdowns.append(templatesDropdown);
 
         form.append(divDropdowns)
     }
