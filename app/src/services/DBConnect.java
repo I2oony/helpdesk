@@ -179,7 +179,7 @@ public class DBConnect {
             int length = (int) ticketsCollection.count(ne("priority", 0));
             Ticket[] tickets = new Ticket[length];
             int i = 0;
-            MongoCursor<Document> cursor = ticketsCollection.find(ne("priority", 0)).iterator();
+            MongoCursor<Document> cursor = ticketsCollection.find(ne("priority", 0)).sort(orderBy(descending("priority"))).iterator();
             return getTickets(tickets, i, cursor);
         } catch (Exception e) {
             logger.warning("An error occured while fetching the tickets list: " + e.getMessage());
