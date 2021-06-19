@@ -2,6 +2,7 @@
 /app/.idea
 /app/out
 /app/config_*
+/app/logs_*
 /nginx
 /app/src/resources/config.properties
 /XD
