@@ -6,8 +6,8 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import entites.Session;
-import entites.User;
+import entities.Session;
+import entities.User;
 import services.*;
 
 import java.io.IOException;

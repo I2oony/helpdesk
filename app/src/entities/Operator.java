@@ -1,4 +1,4 @@
-package entites;
+package entities;
 
 import org.bson.Document;
 

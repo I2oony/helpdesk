@@ -1,6 +1,6 @@
 package tests.services;
 
-import entites.User;
+import entities.User;
 import org.junit.*;
 import services.DBConnect;
 

@@ -8,9 +8,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
-import entites.structures.ChangePassword;
+import entities.structures.ChangePassword;
 import services.*;
-import entites.*;
+import entities.*;
 
 public class WebInterfaceHandler implements HttpHandler {
     static CustomLogger logger;

@@ -2,6 +2,7 @@ package main;
 
 import com.sun.net.httpserver.*;
 import services.*;
+import entities.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;

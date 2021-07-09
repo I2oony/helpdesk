@@ -1,7 +1,7 @@
 package services;
 
-import entites.Operator;
-import entites.Ticket;
+import entities.Operator;
+import entities.Ticket;
 
 import java.util.ArrayList;
 import java.util.TimerTask;

@@ -3,7 +3,7 @@ package services;
 import com.sun.net.httpserver.Authenticator;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
-import entites.Session;
+import entities.Session;
 
 public class BearerAuth extends Authenticator {
     static CustomLogger logger = new CustomLogger(BearerAuth.class.getName());
